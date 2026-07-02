@@ -1,0 +1,23 @@
+# python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# node
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+
+# env & secrets
+.env
+*.env.local
+
+# data caches
+pipeline/cache/
+fastf1_cache/
+
+# OS / editor
+Thumbs.db
+.DS_Store

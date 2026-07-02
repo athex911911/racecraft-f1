@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+@theme {
+  /* F1 Insight AI palette */
+  --color-f1-red: #e10600;
+  --color-f1-red-bright: #ff2d27;
+  --color-carbon-950: #070707;
+  --color-carbon-900: #0b0b0b;
+  --color-carbon-850: #101010;
+  --color-carbon-800: #161616;
+  --color-carbon-700: #1d1d1d;
+  --color-carbon-600: #222222;
+  --color-carbon-500: #2e2e2e;
+  --color-carbon-400: #3d3d3d;
+  --color-foreground: #f8f8f8;
+  --color-silver: #bfbfbf;
+  --color-muted: #8a8a8a;
+  --color-accent: #00d4ff;
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-danger: #ff3b30;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
+
+  --radius-card: 1rem;
+
+  --animate-shimmer: shimmer 1.8s linear infinite;
+  --animate-pulse-glow: pulse-glow 2.4s ease-in-out infinite;
+  --animate-marquee: marquee 28s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-carbon-900);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  /* subtle carbon-fiber weave */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(225, 6, 0, 0.07), transparent),
+    linear-gradient(27deg, var(--color-carbon-850) 5px, transparent 5px),
+    linear-gradient(207deg, var(--color-carbon-850) 5px, transparent 5px),
+    linear-gradient(27deg, var(--color-carbon-800) 5px, transparent 5px),
+    linear-gradient(207deg, var(--color-carbon-800) 5px, transparent 5px),
+    linear-gradient(90deg, var(--color-carbon-850) 10px, transparent 10px),
+    linear-gradient(
+      var(--color-carbon-850) 25%,
+      var(--color-carbon-900) 25%,
+      var(--color-carbon-900) 50%,
+      var(--color-carbon-850) 50%,
+      var(--color-carbon-850) 75%,
+      var(--color-carbon-900) 75%,
+      var(--color-carbon-900)
+    );
+  background-size:
+    100% 640px,
+    20px 20px,
+    20px 20px,
+    20px 20px,
+    20px 20px,
+    20px 20px,
+    20px 20px;
+  background-attachment: fixed;
+}
+
+/* glassmorphism card surface */
+.glass {
+  background: linear-gradient(160deg, rgba(34, 34, 34, 0.72), rgba(16, 16, 16, 0.82));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.glass-hover {
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.glass-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(225, 6, 0, 0.35);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 16px 44px rgba(0, 0, 0, 0.55),
+    0 0 24px rgba(225, 6, 0, 0.08);
+}
+
+/* speed-line accent used under headings */
+.speed-line {
+  position: relative;
+}
+.speed-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 3px;
+  width: 42px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-f1-red), transparent);
+}
+
+/* skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--color-carbon-700) 40%,
+    var(--color-carbon-500) 50%,
+    var(--color-carbon-700) 60%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: 0.5rem;
+}
+
+/* thin dark scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-carbon-500) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-carbon-500);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::selection {
+  background: rgba(225, 6, 0, 0.55);
+  color: #fff;
+}
