@@ -11,7 +11,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatTile } from "@/components/ui/stat-tile";
 import { useCircuitDetail } from "@/lib/api/hooks";
-import { CIRCUIT_IMAGES } from "@/lib/design/images";
+import { CIRCUIT_IMAGES, CIRCUIT_PHOTOS } from "@/lib/design/images";
 import { cn, countryFlag } from "@/lib/utils";
 import type { CircuitWinnerLine, TopEntry } from "@/types/f1";
 
@@ -48,6 +48,7 @@ export default function CircuitDetailPage() {
 
   const { circuit: c } = data;
   const art = CIRCUIT_IMAGES[c.circuit_ref];
+  const photo = CIRCUIT_PHOTOS[c.circuit_ref];
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -64,42 +65,51 @@ export default function CircuitDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <GlassCard className="relative overflow-hidden p-6 sm:p-8">
+        <div className="relative min-h-[300px] overflow-hidden rounded-card border border-white/8 shadow-[0_20px_60px_rgba(0,0,0,0.5)] sm:min-h-[360px]">
+          {/* full-bleed real photo of the track */}
+          {photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo} alt={c.name} className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 bg-carbon-850" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-carbon-900 via-carbon-900/55 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-carbon-900/80 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-f1-red via-f1-red/40 to-transparent" />
+
+          {/* track-layout inset — the shape, over the photo */}
           {art ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={art}
-              alt={`${c.name} track layout`}
-              className="pointer-events-none absolute -right-8 top-1/2 h-[130%] max-w-none -translate-y-1/2 opacity-[0.30]"
-              style={{
-                filter: "invert(1) grayscale(1)",
-                maskImage: "linear-gradient(260deg, black 35%, transparent 85%)",
-                WebkitMaskImage: "linear-gradient(260deg, black 35%, transparent 85%)",
-              }}
+              alt={`${c.name} layout`}
+              className="pointer-events-none absolute right-5 top-5 hidden h-24 w-24 object-contain opacity-70 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)] sm:block"
+              style={{ filter: "invert(1) grayscale(1)" }}
             />
           ) : null}
-          <div className="relative max-w-2xl">
+
+          <div className="absolute inset-x-0 bottom-0 max-w-2xl p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-f1-red">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-f1-red drop-shadow">
                 {c.track_type ? `${c.track_type} circuit` : "Circuit"}
               </p>
               {data.on_current_calendar ? (
-                <span className="rounded-full bg-f1-red/15 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-f1-red ring-1 ring-f1-red/30">
+                <span className="rounded-full bg-f1-red/20 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-f1-red ring-1 ring-f1-red/40 backdrop-blur">
                   2026 Calendar
                 </span>
               ) : null}
             </div>
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] sm:text-5xl">
               {countryFlag(c.country)} {c.name}
             </h1>
-            <p className="mt-2 text-sm text-silver">
+            <p className="mt-2 text-sm text-silver drop-shadow">
               {[c.location, c.country].filter(Boolean).join(" · ")}
-              {c.first_gp_year ? ` · First GP ${c.first_gp_year}` : ""}
+              {c.first_gp_year ? ` · First Grand Prix ${c.first_gp_year}` : ""}
             </p>
             {data.next_race_date ? (
-              <p className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-silver backdrop-blur">
+              <p className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-silver backdrop-blur">
                 <CalendarDays className="h-3.5 w-3.5 text-f1-red" />
-                Next race{" "}
+                Lights out{" "}
                 {new Date(data.next_race_date).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "long",
@@ -108,7 +118,7 @@ export default function CircuitDetailPage() {
               </p>
             ) : null}
           </div>
-        </GlassCard>
+        </div>
       </motion.div>
 
       {/* track + history KPIs */}

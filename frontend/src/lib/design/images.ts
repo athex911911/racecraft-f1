@@ -49,3 +49,34 @@ export const CIRCUIT_IMAGES: Record<string, string> = {
   baku: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Baku_Formula_One_circuit_map.svg/1280px-Baku_Formula_One_circuit_map.svg.png",
   madring: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Madring_%282026%29.svg/1280px-Madring_%282026%29.svg.png",
 };
+
+/**
+ * Real photography of the tracks — mostly aerial "SkySat" shots (Wikimedia,
+ * verified 2026-07-04), keyed by circuit_ref. Used as the hero imagery on
+ * circuit cards / detail and the dashboard's next-race card. Circuits without
+ * a good free photo (e.g. Las Vegas street circuit, the new Madring) are
+ * intentionally absent and degrade to the track-layout art.
+ */
+export const CIRCUIT_PHOTOS: Record<string, string> = {
+  red_bull_ring: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Red_Bull_Ring%2C_April_18%2C_2018_SkySat.jpg/1280px-Red_Bull_Ring%2C_April_18%2C_2018_SkySat.jpg",
+  catalunya: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Circuit_de_Barcelona-Catalunya%2C_April_19%2C_2018_SkySat.jpg/1280px-Circuit_de_Barcelona-Catalunya%2C_April_19%2C_2018_SkySat.jpg",
+  silverstone: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Silverstone_Racing_Circuit.jpg/1280px-Silverstone_Racing_Circuit.jpg",
+  monza: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Autodromo_Nazionale_Monza%2C_April_22%2C_2018_SkySat_%28cropped%29.jpg/1280px-Autodromo_Nazionale_Monza%2C_April_22%2C_2018_SkySat_%28cropped%29.jpg",
+  monaco: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Circuit_de_Monaco%2C_April_1%2C_2018_SkySat_%28cropped%29.jpg",
+  spa: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Circuit_de_Spa-Francorchamps%2C_April_22%2C_2018_SkySat_%28cropped%29.jpg/1280px-Circuit_de_Spa-Francorchamps%2C_April_22%2C_2018_SkySat_%28cropped%29.jpg",
+  hungaroring: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Hungaroring%2C_April_28%2C_2018_SkySat.jpg/1280px-Hungaroring%2C_April_28%2C_2018_SkySat.jpg",
+  albert_park: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Melbourne_Grand_Prix_Circuit%2C_March_22%2C_2018_SkySat_%28cropped%29.jpg/1280px-Melbourne_Grand_Prix_Circuit%2C_March_22%2C_2018_SkySat_%28cropped%29.jpg",
+  villeneuve: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Circuit_Gilles-Villeneuve%2C_May_29%2C_2018_SkySat.jpg/1280px-Circuit_Gilles-Villeneuve%2C_May_29%2C_2018_SkySat.jpg",
+  yas_marina: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/North_Grandstand_at_the_Yas_Marina_circuit_in_Abu_Dhabi.jpg/1280px-North_Grandstand_at_the_Yas_Marina_circuit_in_Abu_Dhabi.jpg",
+  rodriguez: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez%2C_June_4%2C_2018_SkySat.jpg/1280px-Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez%2C_June_4%2C_2018_SkySat.jpg",
+  interlagos: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Vista_a%C3%A9rea_del_Aut%C3%B3dromo_Jos%C3%A9_Carlos_Pace_05.jpg/1280px-Vista_a%C3%A9rea_del_Aut%C3%B3dromo_Jos%C3%A9_Carlos_Pace_05.jpg",
+  americas: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Circuit_of_the_Americas_aerial_view_from_WN4430.jpg/1280px-Circuit_of_the_Americas_aerial_view_from_WN4430.jpg",
+  marina_bay: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Marina_Bay_Street_Circuit%2C_May_8%2C_2018_SkySat.jpg/1280px-Marina_Bay_Street_Circuit%2C_May_8%2C_2018_SkySat.jpg",
+  suzuka: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Suzuka_Circuit_Aerial_photograph_1987.jpg/1280px-Suzuka_Circuit_Aerial_photograph_1987.jpg",
+  baku: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Baku_City_Circuit%2C_April_9%2C_2018_SkySat.jpg/1280px-Baku_City_Circuit%2C_April_9%2C_2018_SkySat.jpg",
+  shanghai: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Shanghai_International_Circuit%2C_April_7%2C_2018_SkySat.jpg/1280px-Shanghai_International_Circuit%2C_April_7%2C_2018_SkySat.jpg",
+  zandvoort: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Circuit_Park_Zandvoort_aerial_photo.jpg/1280px-Circuit_Park_Zandvoort_aerial_photo.jpg",
+  miami: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Start_of_the_Porsche_Sprint_Challenge_North_America_at_the_F1_Miami_GP_-_2022.jpg/1280px-Start_of_the_Porsche_Sprint_Challenge_North_America_at_the_F1_Miami_GP_-_2022.jpg",
+  losail: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/WTCC_2016%2C_Qatar.jpg/1280px-WTCC_2016%2C_Qatar.jpg",
+};
+
