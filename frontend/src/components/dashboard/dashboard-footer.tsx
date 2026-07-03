@@ -12,8 +12,7 @@ export function DashboardFooter() {
   return (
     <footer className="mt-4 flex flex-col items-start justify-between gap-3 border-t border-white/5 pt-5 text-xs text-muted sm:flex-row sm:items-center">
       <p>
-        F1 Insight AI · v{health?.version ?? "0.1.0"} · Data via Jolpica-F1 &amp; FastF1 ·
-        Built for analysis, unaffiliated with Formula 1
+        F1 Insight AI · <span className="font-semibold text-silver">athex</span>
       </p>
       <div className="flex items-center gap-4">
         {progress && (

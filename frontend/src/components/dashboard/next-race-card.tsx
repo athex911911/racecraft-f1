@@ -9,6 +9,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNextRace } from "@/lib/api/hooks";
+import { CIRCUIT_IMAGES } from "@/lib/design/images";
 import { countryFlag } from "@/lib/utils";
 
 export function NextRaceCard() {
@@ -28,11 +29,27 @@ export function NextRaceCard() {
           <p className="p-6 text-sm text-muted">Season complete — no upcoming race.</p>
         ) : (
           <div className="grid lg:grid-cols-[1.4fr_1fr]">
-            <div className="p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-f1-red">
+            <div className="relative overflow-hidden p-6">
+              {/* track layout as a white-line backdrop */}
+              {CIRCUIT_IMAGES[race.circuit.circuit_ref] && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={CIRCUIT_IMAGES[race.circuit.circuit_ref]}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className="pointer-events-none absolute -bottom-12 -right-12 h-[135%] max-w-none opacity-[0.06]"
+                  style={{
+                    filter: "invert(1) grayscale(1)",
+                    maskImage: "linear-gradient(250deg, black 25%, transparent 75%)",
+                    WebkitMaskImage: "linear-gradient(250deg, black 25%, transparent 75%)",
+                  }}
+                />
+              )}
+              <p className="relative text-xs font-semibold uppercase tracking-[0.25em] text-f1-red">
                 Round {race.round} · {race.season}
               </p>
-              <h3 className="mt-1 font-display text-2xl font-bold">
+              <h3 className="relative mt-1 font-display text-2xl font-bold sm:text-3xl">
                 {countryFlag(race.circuit.country)} {race.name}
               </h3>
               <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">

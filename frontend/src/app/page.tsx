@@ -7,6 +7,7 @@ import { LatestRaceSummary } from "@/components/dashboard/latest-race-summary";
 import { NextRaceCard } from "@/components/dashboard/next-race-card";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { Standings } from "@/components/dashboard/standings";
+import { TeamRibbon } from "@/components/dashboard/team-ribbon";
 import { TrendingStats } from "@/components/dashboard/trending-stats";
 
 export const metadata: Metadata = {
@@ -19,6 +20,8 @@ export default function DashboardPage() {
       <Hero />
       <div className="grid gap-10 2xl:grid-cols-[1.5fr_1fr] 2xl:gap-6">
         <Standings />
+        {/* between Standings and Next GP when stacked; full-width row below the pair at 2xl */}
+        <TeamRibbon className="2xl:order-3 2xl:col-span-2" />
         <NextRaceCard />
       </div>
       <ChampionshipChart />

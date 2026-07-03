@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import { Medal, Rocket, Timer, Zap } from "lucide-react";
 
+import { DriverAvatar } from "@/components/f1/driver-avatar";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,21 +51,34 @@ export function LatestRaceSummary() {
               {race.podium.map((p, i) => (
                 <div
                   key={p.position}
-                  className={cn("rounded-xl border p-4", PODIUM_STYLES[i] ?? PODIUM_STYLES[2])}
+                  className={cn(
+                    "group relative overflow-hidden rounded-xl border p-4 transition-transform duration-300 hover:-translate-y-0.5",
+                    PODIUM_STYLES[i] ?? PODIUM_STYLES[2],
+                  )}
                 >
-                  <div className="flex items-center gap-2">
-                    <Medal className="h-4 w-4 text-silver" />
-                    <span className="font-display text-lg font-bold">P{p.position}</span>
-                  </div>
-                  <p className="mt-1.5 font-semibold">{p.driver.full_name}</p>
-                  <p className="text-xs text-silver">
-                    <span
-                      className="mr-1.5 inline-block h-2 w-2 rounded-sm align-middle"
-                      style={{ background: p.constructor?.color ?? "#3d3d3d" }}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Medal className="h-4 w-4 text-silver" />
+                        <span className="font-display text-xl font-bold">P{p.position}</span>
+                      </div>
+                      <p className="mt-2 truncate font-semibold">{p.driver.full_name}</p>
+                      <p className="mt-0.5 text-xs text-silver">
+                        <span
+                          className="mr-1.5 inline-block h-2 w-2 rounded-sm align-middle"
+                          style={{ background: p.constructor?.color ?? "#3d3d3d" }}
+                        />
+                        {p.constructor?.name}
+                        {p.time_text ? <span className="text-muted"> · {p.time_text}</span> : null}
+                      </p>
+                    </div>
+                    <DriverAvatar
+                      driver={p.driver}
+                      teamColor={p.constructor?.color}
+                      size="lg"
+                      className="shrink-0 transition-transform duration-300 group-hover:scale-105"
                     />
-                    {p.constructor?.name}
-                    {p.time_text ? <span className="text-muted"> · {p.time_text}</span> : null}
-                  </p>
+                  </div>
                 </div>
               ))}
             </div>

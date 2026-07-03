@@ -76,10 +76,10 @@ export function ChampionshipChart() {
           <p className="py-16 text-center text-sm text-muted">No results ingested yet.</p>
         ) : (
           <>
-            <div className="h-[340px]">
+            <div className="h-[380px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={rows} margin={{ top: 8, right: 46, bottom: 4, left: 4 }}>
-                  <CartesianGrid stroke="#242424" strokeWidth={1} vertical={false} />
+                  <CartesianGrid stroke="#1e1e1e" strokeWidth={1} vertical={false} />
                   <XAxis
                     dataKey="round"
                     tick={{ fill: "#8a8a8a", fontSize: 11 }}
@@ -100,13 +100,13 @@ export function ChampionshipChart() {
                       type="monotone"
                       dataKey={s.label}
                       stroke={s.colorResolved}
-                      strokeWidth={2}
+                      strokeWidth={2.5}
                       strokeLinecap="round"
                       strokeDasharray={s.dash}
                       dot={false}
-                      activeDot={{ r: 4, stroke: "#161616", strokeWidth: 2 }}
+                      activeDot={{ r: 5, stroke: "#0b0b0b", strokeWidth: 2 }}
                       isAnimationActive
-                      animationDuration={600}
+                      animationDuration={800}
                     />
                   ))}
                 </LineChart>

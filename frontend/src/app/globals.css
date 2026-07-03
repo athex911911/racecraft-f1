@@ -65,35 +65,57 @@ html {
 }
 
 body {
-  background-color: var(--color-carbon-900);
+  background-color: #060606;
   color: var(--color-foreground);
   font-family: var(--font-sans);
-  /* subtle carbon-fiber weave */
+  /* cinematic layered backdrop: red stage light, cool rim light,
+     fine carbon-fibre weave, deep vertical grade */
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(225, 6, 0, 0.07), transparent),
-    linear-gradient(27deg, var(--color-carbon-850) 5px, transparent 5px),
-    linear-gradient(207deg, var(--color-carbon-850) 5px, transparent 5px),
-    linear-gradient(27deg, var(--color-carbon-800) 5px, transparent 5px),
-    linear-gradient(207deg, var(--color-carbon-800) 5px, transparent 5px),
-    linear-gradient(90deg, var(--color-carbon-850) 10px, transparent 10px),
-    linear-gradient(
-      var(--color-carbon-850) 25%,
-      var(--color-carbon-900) 25%,
-      var(--color-carbon-900) 50%,
-      var(--color-carbon-850) 50%,
-      var(--color-carbon-850) 75%,
-      var(--color-carbon-900) 75%,
-      var(--color-carbon-900)
-    );
-  background-size:
-    100% 640px,
-    20px 20px,
-    20px 20px,
-    20px 20px,
-    20px 20px,
-    20px 20px,
-    20px 20px;
+    radial-gradient(55% 38% at 82% -6%, rgba(225, 6, 0, 0.12), transparent 68%),
+    radial-gradient(45% 30% at 4% -4%, rgba(255, 255, 255, 0.05), transparent 60%),
+    radial-gradient(70% 45% at 50% 108%, rgba(225, 6, 0, 0.05), transparent 70%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.013) 0 1.5px, transparent 1.5px 7px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.009) 0 1.5px, transparent 1.5px 7px),
+    linear-gradient(180deg, #0c0c0c 0%, #070707 45%, #050505 100%);
   background-attachment: fixed;
+}
+
+/* film grain + cinematic vignette, above content but inert */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background: radial-gradient(130% 100% at 50% 12%, transparent 62%, rgba(0, 0, 0, 0.38) 100%);
+}
+
+/* slow drift for hero photography */
+.ken-burns {
+  animation: ken-burns 26s ease-in-out infinite alternate;
+}
+@keyframes ken-burns {
+  from {
+    transform: scale(1.02) translateX(0);
+  }
+  to {
+    transform: scale(1.09) translateX(-1.5%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns {
+    animation: none;
+  }
 }
 
 /* glassmorphism card surface */
@@ -120,6 +142,26 @@ body {
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
     0 16px 44px rgba(0, 0, 0, 0.55),
     0 0 24px rgba(225, 6, 0, 0.08);
+}
+
+/* ambient checkered-flag ribbon — decorative backdrop, keep at very low opacity */
+.checker-flag {
+  background-image: repeating-conic-gradient(#ffffff 0% 25%, transparent 0% 50%);
+  background-size: 34px 34px;
+  animation: checker-drift 2.6s linear infinite;
+}
+@keyframes checker-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 34px 34px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .checker-flag {
+    animation: none;
+  }
 }
 
 /* speed-line accent used under headings */
