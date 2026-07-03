@@ -16,6 +16,7 @@ export interface Constructor {
   name: string;
   nationality: string | null;
   color: string | null;
+  logo_url: string | null;
 }
 
 export interface Circuit {
@@ -138,4 +139,201 @@ export interface HealthStatus {
   status: string;
   database: string;
   version: string;
+}
+
+// --- Driver analytics (Phase 2) ---
+
+export interface DriverListItem {
+  driver: Driver;
+  constructor: Constructor | null;
+  season: number | null;
+  races: number;
+  wins: number;
+  podiums: number;
+  poles: number;
+  points: number;
+  best_finish: number | null;
+}
+
+export interface DriverRating {
+  key: string;
+  label: string;
+  value: number;
+  detail: string;
+}
+
+export interface DriverSeasonStat {
+  season: number;
+  constructor: Constructor | null;
+  races: number;
+  points: number;
+  wins: number;
+  podiums: number;
+  poles: number;
+  best_finish: number | null;
+  championship_position: number | null;
+}
+
+export interface DriverCareerStats {
+  seasons: number;
+  first_season: number | null;
+  last_season: number | null;
+  races: number;
+  wins: number;
+  podiums: number;
+  poles: number;
+  fastest_laps: number;
+  points: number;
+  dnfs: number;
+  titles: number;
+  best_championship_position: number | null;
+  win_rate: number;
+  podium_rate: number;
+  avg_grid: number | null;
+  avg_finish: number | null;
+}
+
+export interface DriverResultLine {
+  season: number;
+  round: number;
+  race_name: string;
+  circuit: string;
+  grid: number | null;
+  position: number | null;
+  position_text: string | null;
+  points: number;
+  status: string | null;
+}
+
+export interface DriverDetail {
+  driver: Driver;
+  dob: string | null;
+  current_constructor: Constructor | null;
+  teams: Constructor[];
+  career: DriverCareerStats;
+  ratings: DriverRating[];
+  seasons: DriverSeasonStat[];
+  strengths: string[];
+  weaknesses: string[];
+  recent_results: DriverResultLine[];
+  data_since: number | null;
+}
+
+// --- Constructor analytics (Phase 2) ---
+
+export interface ConstructorListItem {
+  constructor: Constructor;
+  season: number | null;
+  races: number;
+  wins: number;
+  podiums: number;
+  poles: number;
+  points: number;
+  championship_position: number | null;
+  drivers: Driver[];
+}
+
+// Structurally identical to DriverSeasonStat, so it reuses SeasonPointsChart.
+export interface ConstructorSeasonStat {
+  season: number;
+  constructor: Constructor | null;
+  races: number;
+  points: number;
+  wins: number;
+  podiums: number;
+  poles: number;
+  best_finish: number | null;
+  championship_position: number | null;
+}
+
+export interface ConstructorCareerStats {
+  seasons: number;
+  first_season: number | null;
+  last_season: number | null;
+  races: number;
+  entries: number;
+  wins: number;
+  podiums: number;
+  poles: number;
+  one_twos: number;
+  fastest_laps: number;
+  points: number;
+  dnfs: number;
+  titles: number;
+  best_championship_position: number | null;
+  win_rate: number;
+  podium_rate: number;
+  avg_grid: number | null;
+  avg_finish: number | null;
+}
+
+export interface ConstructorDriver {
+  driver: Driver;
+  races: number;
+  seasons: number;
+  is_current: boolean;
+}
+
+export interface ConstructorResultLine {
+  season: number;
+  round: number;
+  race_name: string;
+  best_position: number | null;
+  points: number;
+  car_results: string[];
+}
+
+export interface ConstructorDetail {
+  constructor: Constructor;
+  career: ConstructorCareerStats;
+  ratings: DriverRating[];
+  seasons: ConstructorSeasonStat[];
+  drivers: ConstructorDriver[];
+  strengths: string[];
+  weaknesses: string[];
+  recent_results: ConstructorResultLine[];
+  data_since: number | null;
+}
+
+// --- Circuit analytics (Phase 2) ---
+
+export interface CircuitListItem {
+  circuit: Circuit;
+  races_held: number;
+  first_year: number | null;
+  last_year: number | null;
+  on_current_calendar: boolean;
+  last_winner: string | null;
+}
+
+export interface CircuitWinnerLine {
+  season: number;
+  race_name: string;
+  driver: Driver;
+  constructor: Constructor | null;
+  grid: number | null;
+  time_text: string | null;
+}
+
+export interface TopEntry {
+  label: string;
+  color: string | null;
+  value: number;
+}
+
+export interface CircuitDetail {
+  circuit: Circuit;
+  races_held: number;
+  first_year: number | null;
+  last_year: number | null;
+  on_current_calendar: boolean;
+  next_race_date: string | null;
+  distinct_winners: number;
+  pole_win_rate: number | null;
+  dnf_rate: number | null;
+  avg_finishers: number | null;
+  top_drivers: TopEntry[];
+  top_constructors: TopEntry[];
+  winners: CircuitWinnerLine[];
+  data_since: number | null;
 }

@@ -5,7 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "./client";
 import type {
   ChampionshipProgress,
+  CircuitDetail,
+  CircuitListItem,
+  ConstructorDetail,
+  ConstructorListItem,
   ConstructorStanding,
+  DriverDetail,
+  DriverListItem,
   DriverStanding,
   HealthStatus,
   NextRace,
@@ -68,6 +74,59 @@ export function useLatestRaceSummary() {
   return useQuery({
     queryKey: ["latest-race-summary"],
     queryFn: () => apiGet<RaceSummary | null>("/api/v1/races/latest/summary"),
+  });
+}
+
+export function useDrivers(season = "current", search?: string) {
+  return useQuery({
+    queryKey: ["drivers", season, search ?? ""],
+    queryFn: () =>
+      apiGet<DriverListItem[]>("/api/v1/drivers", {
+        season,
+        search: search || undefined,
+      }),
+  });
+}
+
+export function useDriverDetail(driverRef: string) {
+  return useQuery({
+    queryKey: ["driver-detail", driverRef],
+    queryFn: () => apiGet<DriverDetail>(`/api/v1/drivers/${driverRef}`),
+    enabled: Boolean(driverRef),
+  });
+}
+
+export function useConstructors(season = "current", search?: string) {
+  return useQuery({
+    queryKey: ["constructors", season, search ?? ""],
+    queryFn: () =>
+      apiGet<ConstructorListItem[]>("/api/v1/constructors", {
+        season,
+        search: search || undefined,
+      }),
+  });
+}
+
+export function useConstructorDetail(constructorRef: string) {
+  return useQuery({
+    queryKey: ["constructor-detail", constructorRef],
+    queryFn: () => apiGet<ConstructorDetail>(`/api/v1/constructors/${constructorRef}`),
+    enabled: Boolean(constructorRef),
+  });
+}
+
+export function useCircuits() {
+  return useQuery({
+    queryKey: ["circuits"],
+    queryFn: () => apiGet<CircuitListItem[]>("/api/v1/circuits"),
+  });
+}
+
+export function useCircuitDetail(circuitRef: string) {
+  return useQuery({
+    queryKey: ["circuit-detail", circuitRef],
+    queryFn: () => apiGet<CircuitDetail>(`/api/v1/circuits/${circuitRef}`),
+    enabled: Boolean(circuitRef),
   });
 }
 
