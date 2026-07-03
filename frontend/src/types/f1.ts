@@ -337,3 +337,81 @@ export interface CircuitDetail {
   winners: CircuitWinnerLine[];
   data_since: number | null;
 }
+
+// --- Calendar / history (Phase 2) ---
+
+export interface CalendarRace {
+  race_id: number;
+  season: number;
+  round: number;
+  name: string;
+  date: string;
+  time: string | null;
+  circuit: Circuit;
+  completed: boolean;
+  winner: string | null;
+  winner_color: string | null;
+  pole_sitter: string | null;
+}
+
+export interface RaceResultRow {
+  position: number | null;
+  position_text: string | null;
+  driver: Driver;
+  constructor: Constructor | null;
+  grid: number | null;
+  points: number;
+  status: string | null;
+  fastest_lap: boolean;
+  time_text: string | null;
+}
+
+export interface RaceDetail {
+  race_id: number;
+  season: number;
+  round: number;
+  name: string;
+  date: string;
+  circuit: Circuit;
+  pole_sitter: string | null;
+  fastest_lap_driver: string | null;
+  results: RaceResultRow[];
+}
+
+// --- Hall of Fame (Phase 2) ---
+
+export interface RecordEntry {
+  ref: string | null;
+  label: string;
+  color: string | null;
+  value: number;
+  display: string;
+}
+
+export interface RecordCategory {
+  key: string;
+  title: string;
+  entries: RecordEntry[];
+}
+
+export interface HallOfFame {
+  seasons_covered: string;
+  drivers: RecordCategory[];
+  constructors: RecordCategory[];
+}
+
+// --- Compare (Phase 2) ---
+
+export interface HeadToHead {
+  shared_races: number;
+  a_race_ahead: number;
+  b_race_ahead: number;
+  a_quali_ahead: number;
+  b_quali_ahead: number;
+}
+
+export interface CompareResult {
+  a: DriverDetail;
+  b: DriverDetail;
+  head_to_head: HeadToHead;
+}

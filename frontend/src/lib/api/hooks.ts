@@ -4,17 +4,21 @@ import { useQuery } from "@tanstack/react-query";
 
 import { apiGet } from "./client";
 import type {
+  CalendarRace,
   ChampionshipProgress,
   CircuitDetail,
   CircuitListItem,
+  CompareResult,
   ConstructorDetail,
   ConstructorListItem,
   ConstructorStanding,
   DriverDetail,
   DriverListItem,
   DriverStanding,
+  HallOfFame,
   HealthStatus,
   NextRace,
+  RaceDetail,
   RaceSummary,
   SeasonProgress,
   TrendingStat,
@@ -127,6 +131,44 @@ export function useCircuitDetail(circuitRef: string) {
     queryKey: ["circuit-detail", circuitRef],
     queryFn: () => apiGet<CircuitDetail>(`/api/v1/circuits/${circuitRef}`),
     enabled: Boolean(circuitRef),
+  });
+}
+
+export function useSeasons() {
+  return useQuery({
+    queryKey: ["seasons"],
+    queryFn: () => apiGet<number[]>("/api/v1/seasons"),
+  });
+}
+
+export function useSeasonRaces(season: number | undefined) {
+  return useQuery({
+    queryKey: ["season-races", season],
+    queryFn: () => apiGet<CalendarRace[]>(`/api/v1/seasons/${season}/races`),
+    enabled: season != null,
+  });
+}
+
+export function useRaceDetail(raceId: number | undefined) {
+  return useQuery({
+    queryKey: ["race-detail", raceId],
+    queryFn: () => apiGet<RaceDetail>(`/api/v1/races/${raceId}`),
+    enabled: raceId != null,
+  });
+}
+
+export function useHallOfFame() {
+  return useQuery({
+    queryKey: ["records"],
+    queryFn: () => apiGet<HallOfFame>("/api/v1/records"),
+  });
+}
+
+export function useCompareDrivers(a: string | undefined, b: string | undefined) {
+  return useQuery({
+    queryKey: ["compare", a, b],
+    queryFn: () => apiGet<CompareResult>("/api/v1/compare/drivers", { a, b }),
+    enabled: Boolean(a && b),
   });
 }
 
