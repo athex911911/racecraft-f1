@@ -37,6 +37,7 @@ copy .env.example .env
 cd ..
 backend\.venv\Scripts\python pipeline\ingest\ingest.py --from-season 2024 --to-season 2026 --current-season-standings
 backend\.venv\Scripts\python pipeline\ingest\seed.py
+backend\.venv\Scripts\python pipeline\ingest\photos.py   # driver headshots from Wikipedia (optional)
 
 # 3. Frontend
 cd frontend
@@ -58,7 +59,7 @@ checkpoints per (entity, season) so it can be stopped and resumed freely.
 ## Project status
 
 - ✅ **Phase 1** — data pipeline, dashboard (standings, next GP, championship chart, trending stats, latest race)
-- 🚧 **Phase 2** — driver / constructor / circuit analytics pages, world map, comparisons
+- 🚧 **Phase 2** — ✅ driver index + detail (real photos, computed ratings radar, season timeline, auto strengths/weaknesses); ✅ constructor index + detail (team logos, driver line-up, ratings, animated counters); ✅ circuit index + detail (track layouts, records, race character, historical winners); world map + comparisons next
 - 🚧 **Phase 3** — ML race predictor, strategy simulator, weather & tire analytics
 - 🚧 **Phase 4** — auth, prediction league, AI assistant, polish
 
