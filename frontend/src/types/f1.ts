@@ -415,3 +415,33 @@ export interface CompareResult {
   b: DriverDetail;
   head_to_head: HeadToHead;
 }
+
+// --- Global search (Phase 2) ---
+
+export interface SearchDriver {
+  ref: string;
+  name: string;
+  code: string | null;
+  nationality: string | null;
+  headshot_url: string | null;
+}
+
+export interface SearchConstructor {
+  ref: string;
+  name: string;
+  color: string | null;
+  logo_url: string | null;
+}
+
+export interface SearchCircuit {
+  ref: string;
+  name: string;
+  location: string | null;
+  country: string | null;
+}
+
+export interface SearchResults {
+  drivers: SearchDriver[];
+  constructors: SearchConstructor[];
+  circuits: SearchCircuit[];
+}

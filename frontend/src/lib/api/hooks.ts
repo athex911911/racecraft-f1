@@ -20,6 +20,7 @@ import type {
   NextRace,
   RaceDetail,
   RaceSummary,
+  SearchResults,
   SeasonProgress,
   TrendingStat,
 } from "@/types/f1";
@@ -169,6 +170,16 @@ export function useCompareDrivers(a: string | undefined, b: string | undefined) 
     queryKey: ["compare", a, b],
     queryFn: () => apiGet<CompareResult>("/api/v1/compare/drivers", { a, b }),
     enabled: Boolean(a && b),
+  });
+}
+
+export function useSearch(query: string) {
+  const q = query.trim();
+  return useQuery({
+    queryKey: ["search", q],
+    queryFn: () => apiGet<SearchResults>("/api/v1/search", { q }),
+    enabled: q.length >= 2,
+    staleTime: 60_000,
   });
 }
 
