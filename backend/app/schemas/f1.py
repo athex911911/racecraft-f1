@@ -424,3 +424,34 @@ class CompareOut(BaseModel):
     a: DriverDetailOut
     b: DriverDetailOut
     head_to_head: HeadToHead
+
+
+# --- Global search (Phase 2) ---
+
+
+class SearchDriver(BaseModel):
+    ref: str
+    name: str
+    code: str | None
+    nationality: str | None
+    headshot_url: str | None
+
+
+class SearchConstructor(BaseModel):
+    ref: str
+    name: str
+    color: str | None
+    logo_url: str | None
+
+
+class SearchCircuit(BaseModel):
+    ref: str
+    name: str
+    location: str | None
+    country: str | None
+
+
+class SearchOut(BaseModel):
+    drivers: list[SearchDriver]
+    constructors: list[SearchConstructor]
+    circuits: list[SearchCircuit]
