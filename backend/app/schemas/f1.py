@@ -343,3 +343,84 @@ class CircuitDetailOut(BaseModel):
     top_constructors: list[TopEntry]
     winners: list[CircuitWinnerLine]  # most recent first
     data_since: int | None
+
+
+# --- Calendar / history explorer (Phase 2) ---
+
+
+class CalendarRace(BaseModel):
+    race_id: int
+    season: int
+    round: int
+    name: str
+    date: date
+    time: str | None
+    circuit: CircuitOut
+    completed: bool
+    winner: str | None
+    winner_color: str | None
+    pole_sitter: str | None
+
+
+class RaceResultRow(BaseModel):
+    position: int | None
+    position_text: str | None
+    driver: DriverOut
+    constructor: ConstructorOut | None
+    grid: int | None
+    points: float
+    status: str | None
+    fastest_lap: bool
+    time_text: str | None
+
+
+class RaceDetailOut(BaseModel):
+    race_id: int
+    season: int
+    round: int
+    name: str
+    date: date
+    circuit: CircuitOut
+    pole_sitter: str | None
+    fastest_lap_driver: str | None
+    results: list[RaceResultRow]
+
+
+# --- Hall of Fame (Phase 2) ---
+
+
+class RecordEntry(BaseModel):
+    ref: str | None  # driver_ref / constructor_ref for linking, when applicable
+    label: str
+    color: str | None
+    value: float
+    display: str  # formatted value
+
+
+class RecordCategory(BaseModel):
+    key: str
+    title: str
+    entries: list[RecordEntry]
+
+
+class HallOfFameOut(BaseModel):
+    seasons_covered: str  # e.g. "2014–2026"
+    drivers: list[RecordCategory]
+    constructors: list[RecordCategory]
+
+
+# --- Driver vs driver comparison (Phase 2) ---
+
+
+class HeadToHead(BaseModel):
+    shared_races: int
+    a_race_ahead: int  # times A finished ahead of B (both classified)
+    b_race_ahead: int
+    a_quali_ahead: int
+    b_quali_ahead: int
+
+
+class CompareOut(BaseModel):
+    a: DriverDetailOut
+    b: DriverDetailOut
+    head_to_head: HeadToHead
