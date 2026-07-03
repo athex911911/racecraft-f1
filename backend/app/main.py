@@ -6,7 +6,10 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from sqlalchemy import text
 
+from app.api.v1.circuits import router as circuits_router
+from app.api.v1.constructors import router as constructors_router
 from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.drivers import router as drivers_router
 from app.core.config import get_settings
 from app.core.database import engine
 
@@ -36,6 +39,9 @@ app.add_middleware(
 
 
 app.include_router(dashboard_router)
+app.include_router(drivers_router)
+app.include_router(constructors_router)
+app.include_router(circuits_router)
 
 
 @app.get("/api/health", tags=["system"])

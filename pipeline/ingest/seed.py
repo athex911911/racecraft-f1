@@ -12,7 +12,7 @@ from sqlalchemy import select  # noqa: E402
 
 from app.core.database import Base, SessionLocal, engine  # noqa: E402
 from app.models.f1 import Circuit, Constructor  # noqa: E402
-from seed_data import CIRCUIT_META, FALLBACK_TEAM_COLOR, TEAM_COLORS  # noqa: E402
+from seed_data import CIRCUIT_META, FALLBACK_TEAM_COLOR, TEAM_COLORS, TEAM_LOGOS  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("seed")
@@ -23,9 +23,13 @@ def main() -> None:
     db = SessionLocal()
     try:
         teams = db.execute(select(Constructor)).scalars().all()
+        logos = 0
         for team in teams:
             team.color = TEAM_COLORS.get(team.constructor_ref, FALLBACK_TEAM_COLOR)
-        log.info("colored %d constructors", len(teams))
+            if team.constructor_ref in TEAM_LOGOS:  # curated logo wins over auto-fetch
+                team.logo_url = TEAM_LOGOS[team.constructor_ref]
+                logos += 1
+        log.info("colored %d constructors, set %d curated logos", len(teams), logos)
 
         matched = 0
         for circuit in db.execute(select(Circuit)).scalars().all():
