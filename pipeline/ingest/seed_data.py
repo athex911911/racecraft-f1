@@ -62,7 +62,7 @@ FALLBACK_TEAM_COLOR = "#BFBFBF"
 # this personal, non-commercial project (user's call, 2026-07-03).
 TEAM_LOGOS: dict[str, str] = {
     "mclaren": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/McLaren_Racing_logo.png/330px-McLaren_Racing_logo.png",
-    "red_bull": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Red_Bull_Racing_-_2021_Logo.svg/330px-Red_Bull_Racing_-_2021_Logo.svg.png",
+    "red_bull": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Red_Bull_Racing_-_2005_Logo.png/330px-Red_Bull_Racing_-_2005_Logo.png",
     "aston_martin": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Aston_Martin_F1_Team_logo_2024.jpg/330px-Aston_Martin_F1_Team_logo_2024.jpg",
     "cadillac": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Cadillac_Formula_1_Team_logo.png/330px-Cadillac_Formula_1_Team_logo.png",
     "ferrari": "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Scuderia_Ferrari_HP_logo_24.svg/500px-Scuderia_Ferrari_HP_logo_24.svg.png",
