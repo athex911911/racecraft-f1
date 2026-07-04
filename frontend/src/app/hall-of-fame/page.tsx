@@ -1,45 +1,39 @@
 "use client";
 
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight, ChevronDown, Crown, Trophy } from "lucide-react";
+import { motion, useMotionValue, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { ChevronDown, Crown, Flag, Trophy } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHallOfFame } from "@/lib/api/hooks";
-import {
-  DECADES,
-  LEGENDS,
-  MOMENTS,
-  QUOTES,
-  RECORD_PORTRAITS,
-  type Legend,
-} from "@/lib/design/legends";
+import { CHAPTERS, RECORD_PORTRAITS, type Achievement, type Chapter } from "@/lib/design/legends";
 import { cn } from "@/lib/utils";
 import type { RecordCategory, RecordEntry } from "@/types/f1";
 
 /* ================================================================== */
-/*  Page                                                              */
+/*  Page — a scrolling documentary                                    */
 /* ================================================================== */
 
 export default function HallOfFamePage() {
   const { data, isLoading } = useHallOfFame();
 
   return (
-    <div className="-mx-4 -my-6 sm:-mx-6 lg:-mx-8">
-      <ScrollHero />
-      <HorizontalLegends />
-      <PinnedQuote quote={QUOTES[0]} image={MOMENTS[0].photo} />
-      <MomentsSection />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Timeline />
-      </div>
-      <PinnedQuote quote={QUOTES[1]} image={MOMENTS[2].photo} mono />
-      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <RecordsSection data={data} isLoading={isLoading} />
+    <div className="-mx-4 -my-6 bg-[#070606] sm:-mx-6 lg:-mx-8">
+      <Particles />
+      <Intro />
+      {CHAPTERS.map((c, i) => (
+        <div key={c.ref}>
+          <RacingLine era={c.era} title={c.eraTitle} flip={i % 2 === 1} />
+          <ChapterSection chapter={c} index={i} />
+        </div>
+      ))}
+      <FinishLine />
+      <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <HallOfRecords data={data} isLoading={isLoading} />
         <p className="mt-10 text-center text-[11px] text-muted">
-          Statistical records cover the ingested era{data ? ` (${data.seasons_covered})` : ""}. The
-          stories above belong to all of Formula One.
+          Career achievements above are all-time records. The statistics in the Hall of Records are
+          computed from the ingested era{data ? ` (${data.seasons_covered})` : ""}.
         </p>
       </div>
     </div>
@@ -47,78 +41,69 @@ export default function HallOfFamePage() {
 }
 
 /* ================================================================== */
-/*  1 · Hero — parallaxes away as you scroll                          */
+/*  Ambient — drifting particles (very subtle)                        */
 /* ================================================================== */
 
-const HERO_COLLAGE = ["senna", "michael_schumacher", "hamilton", "fangio"] as const;
+function Particles() {
+  const dots = Array.from({ length: 22 });
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+      {dots.map((_, i) => {
+        const left = (i * 47) % 100;
+        const size = 1 + (i % 3);
+        const dur = 14 + (i % 7) * 3;
+        const delay = (i % 5) * 2;
+        return (
+          <motion.span
+            key={i}
+            className="absolute rounded-full bg-white/20"
+            style={{ left: `${left}%`, width: size, height: size }}
+            initial={{ y: "110vh", opacity: 0 }}
+            animate={{ y: "-10vh", opacity: [0, 0.5, 0] }}
+            transition={{ duration: dur, delay, repeat: Infinity, ease: "linear" }}
+          />
+        );
+      })}
+    </div>
+  );
+}
 
-function ScrollHero() {
+/* ================================================================== */
+/*  Intro                                                             */
+/* ================================================================== */
+
+function Intro() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-40%"]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const collageScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
-  const cueOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-
-  const legends = HERO_COLLAGE.map((r) => LEGENDS.find((l) => l.ref === r)!).filter(Boolean);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const cue = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   return (
-    <section ref={ref} className="relative h-screen overflow-hidden bg-[#0a0908]">
-      {/* collage */}
-      <motion.div style={{ scale: collageScale }} className="absolute inset-y-0 right-0 hidden w-[64%] isolate sm:block" aria-hidden>
-        {legends.map((l, i) => (
-          <img
-            key={l.ref}
-            src={l.portrait}
-            alt=""
-            className={cn("absolute h-[118%] w-[40%] object-cover object-top", l.mono && "grayscale")}
-            style={{
-              left: `${i * 20}%`,
-              top: i % 2 ? "4%" : "-10%",
-              maskImage: "linear-gradient(90deg, transparent, black 24%, black 76%, transparent)",
-              WebkitMaskImage: "linear-gradient(90deg, transparent, black 24%, black 76%, transparent)",
-              zIndex: 4 - i,
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0908] via-[#0a0908]/30 to-[#0a0908]/85" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0908] via-transparent to-[#0a0908]/50" />
-      </motion.div>
-
-      {/* left scrim */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[74%] bg-gradient-to-r from-[#0a0908] from-26% via-[#0a0908]/85 via-55% to-transparent sm:block" aria-hidden />
+    <section ref={ref} className="relative flex h-screen items-center justify-center">
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ background: "radial-gradient(50% 45% at 78% 18%, rgba(255,215,0,0.06), transparent 65%), radial-gradient(45% 40% at 15% 92%, rgba(225,6,0,0.08), transparent 70%)" }}
+        style={{ background: "radial-gradient(60% 50% at 50% 40%, rgba(225,6,0,0.10), transparent 70%)" }}
         aria-hidden
       />
-
-      <motion.div
-        style={{ y: textY, opacity: textOpacity }}
-        className="relative flex h-full max-w-2xl flex-col justify-center px-6 sm:px-14 lg:px-20"
-      >
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.4em] text-[#FFD700]">
+      <motion.div style={{ y, opacity }} className="relative z-10 px-6 text-center">
+        <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.5em] text-[#FFD700]">
           <Trophy className="h-4 w-4" /> Hall of Fame
         </p>
-        <h1 className="mt-4 font-display text-5xl font-bold uppercase italic leading-[0.95] tracking-tight sm:text-7xl">
-          The Legends
+        <h1 className="mt-6 font-display text-5xl font-bold uppercase italic leading-[0.95] tracking-tight sm:text-8xl">
+          The Legends Who
           <br />
-          Who Defined
-          <br />
-          <span className="text-f1-red">Formula One</span>
+          Built <span className="text-f1-red">Formula One</span>
         </h1>
-        <p className="mt-6 font-display text-lg italic text-silver sm:text-xl">
-          Records tell part of the story. Legacy tells the rest.
+        <p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-silver sm:text-base">
+          Six drivers. Six eras. One story. Scroll through the careers, the numbers and the moments
+          of the men who defined the fastest sport on earth.
         </p>
       </motion.div>
-
-      <motion.div
-        style={{ opacity: cueOpacity }}
-        className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-1 text-muted"
-      >
-        <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">Scroll to begin</span>
-        <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-          <ChevronDown className="h-4 w-4" />
+      <motion.div style={{ opacity: cue }} className="absolute bottom-10 flex flex-col items-center gap-2 text-muted">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.35em]">Scroll to begin the journey</span>
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
+          <ChevronDown className="h-5 w-5" />
         </motion.div>
       </motion.div>
     </section>
@@ -126,409 +111,307 @@ function ScrollHero() {
 }
 
 /* ================================================================== */
-/*  2 · Horizontal scroll-jacked legends                              */
+/*  Racing-line transition — the line draws, a car follows, era name  */
 /* ================================================================== */
 
-function HorizontalLegends() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [maxX, setMaxX] = useState(0);
+function RacingLine({ era, title, flip }: { era: string; title: string; flip: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+
+  const draw = useTransform(scrollYProgress, [0.12, 0.78], [0, 1]);
+  const carOpacity = useTransform(scrollYProgress, [0.1, 0.18, 0.74, 0.85], [0, 1, 1, 0]);
+  const labelOpacity = useTransform(scrollYProgress, [0.32, 0.46, 0.64, 0.78], [0, 1, 1, 0]);
+  const labelY = useTransform(scrollYProgress, [0.32, 0.5], [18, 0]);
+
+  const carX = useMotionValue(40);
+  const carY = useMotionValue(150);
+  const carR = useMotionValue(0);
+
+  // a winding, circuit-like path
+  const PATH = flip
+    ? "M40,150 C 220,300 340,40 520,150 S 820,60 960,180"
+    : "M40,150 C 220,20 340,300 520,150 S 820,260 960,110";
 
   useEffect(() => {
-    const measure = () => {
-      if (!viewportRef.current || !trackRef.current) return;
-      const vw = viewportRef.current.clientWidth;
-      const tw = trackRef.current.scrollWidth;
-      setMaxX(Math.max(tw - vw + 48, 0));
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (trackRef.current) ro.observe(trackRef.current);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -maxX]);
-  const railWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+    const unsub = scrollYProgress.on("change", (v) => {
+      const path = pathRef.current;
+      if (!path) return;
+      const t = Math.max(0, Math.min(1, (v - 0.12) / 0.66));
+      const len = path.getTotalLength();
+      const p = path.getPointAtLength(t * len);
+      const p2 = path.getPointAtLength(Math.min(t * len + 1.5, len));
+      carX.set(p.x);
+      carY.set(p.y);
+      carR.set((Math.atan2(p2.y - p.y, p2.x - p.x) * 180) / Math.PI);
+    });
+    return unsub;
+  }, [scrollYProgress, carX, carY, carR]);
 
   return (
-    <>
-      {/* desktop: scroll-jacked horizontal track */}
-      <section
-        ref={sectionRef}
-        className="relative hidden lg:block"
-        style={{ height: `calc(100vh + ${maxX}px)` }}
-      >
-        <div ref={viewportRef} className="sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
-          {/* heading + progress rail */}
-          <div className="absolute inset-x-0 top-0 z-10 flex items-end justify-between px-10 pt-8">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#FFD700]">The Immortals</p>
-              <h2 className="mt-1 font-display text-3xl font-bold italic tracking-tight">Eleven Who Changed Everything</h2>
-            </div>
-            <div className="h-1 w-40 overflow-hidden rounded-full bg-white/10">
-              <motion.div style={{ width: railWidth }} className="h-full rounded-full bg-f1-red" />
-            </div>
-          </div>
+    <div ref={ref} className="relative h-[70vh]">
+      <div className="sticky top-14 flex h-[calc(100vh-3.5rem)] items-center justify-center">
+        <svg viewBox="0 0 1000 300" className="w-[92%] max-w-4xl overflow-visible">
+          <defs>
+            <filter id="lineglow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          {/* ghost track */}
+          <path d={PATH} fill="none" stroke="#1a1a1a" strokeWidth={3} strokeLinecap="round" />
+          {/* glowing racing line drawing in */}
+          <motion.path
+            ref={pathRef}
+            d={PATH}
+            fill="none"
+            stroke="#E10600"
+            strokeWidth={3}
+            strokeLinecap="round"
+            filter="url(#lineglow)"
+            style={{ pathLength: draw }}
+          />
+          {/* the car */}
+          <motion.g style={{ x: carX, y: carY, rotate: carR, opacity: carOpacity }}>
+            <circle r={11} fill="#E10600" opacity={0.35} filter="url(#lineglow)" />
+            <rect x={-9} y={-3} width={18} height={6} rx={3} fill="#f5f5f5" />
+            <rect x={-11} y={-1.5} width={3} height={3} rx={1} fill="#111" />
+            <rect x={8} y={-1.5} width={3} height={3} rx={1} fill="#111" />
+            <rect x={7} y={-2.6} width={4} height={5.2} rx={1} fill="#E10600" />
+          </motion.g>
+        </svg>
 
-          <div className="flex h-full items-center">
-            <motion.div ref={trackRef} style={{ x }} className="flex gap-6 pl-10 pr-16">
-              {LEGENDS.map((l, i) => (
-                <BigPoster key={l.ref} legend={l} index={i} />
-              ))}
-              <RailEndCard />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* mobile: native swipe row */}
-      <section className="px-4 py-10 lg:hidden">
-        <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#FFD700]">The Immortals</p>
-        <h2 className="mt-1 font-display text-2xl font-bold italic">Eleven Who Changed Everything</h2>
-        <div className="mt-5 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3">
-          {LEGENDS.map((l, i) => (
-            <div key={l.ref} className="snap-start">
-              <BigPoster legend={l} index={i} />
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
-function BigPoster({ legend: l, index }: { legend: Legend; index: number }) {
-  const external = !l.eraData;
-  const inner = (
-    <div className="group relative h-[62vh] max-h-[560px] w-[300px] shrink-0 overflow-hidden rounded-card border border-white/10 bg-carbon-850 shadow-2xl transition-[border-color,box-shadow] duration-500 hover:border-[#FFD700]/50 hover:shadow-[0_0_50px_rgba(255,215,0,0.15)] lg:w-[340px]">
-      <img
-        src={l.portrait}
-        alt={l.name}
-        loading="lazy"
-        className={cn(
-          "absolute inset-0 h-full w-full object-cover object-top transition-transform duration-[1.5s] ease-out group-hover:scale-[1.06]",
-          l.mono && "grayscale",
-        )}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
-      <span className="absolute left-5 top-5 font-display text-6xl font-bold italic text-white/20">
-        {String(index + 1).padStart(2, "0")}
-      </span>
-      <span className="absolute right-4 top-5 flex items-center gap-1.5 rounded-full border border-[#FFD700]/40 bg-black/60 px-2.5 py-1 text-[10px] font-bold text-[#FFD700] backdrop-blur">
-        <Trophy className="h-3 w-3" /> {l.titles}×
-      </span>
-      <div className="absolute inset-x-0 bottom-0 p-6">
-        <p className="font-display text-xs font-semibold uppercase tracking-[0.28em] text-[#FFD700]">
-          {l.epithet}
-        </p>
-        <p className="mt-2 font-display text-3xl font-bold leading-[0.95] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-          {l.name}
-        </p>
-        <p className="mt-2 text-[11px] uppercase tracking-widest text-silver">
-          {l.nationality} · {l.years}
-        </p>
-        <p className="mt-3 max-h-0 overflow-hidden text-sm leading-relaxed text-silver opacity-0 transition-all duration-500 group-hover:max-h-28 group-hover:opacity-100">
-          {l.bio}
-        </p>
-        <p className="mt-3 inline-flex translate-y-2 items-center gap-1 text-[11px] font-semibold uppercase tracking-widest text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-          Explore legacy <ArrowUpRight className="h-3.5 w-3.5" />
-        </p>
+        <motion.div
+          style={{ opacity: labelOpacity, y: labelY }}
+          className="pointer-events-none absolute inset-x-0 top-[26%] text-center"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.5em] text-[#FFD700]">{era}</p>
+          <p className="mt-2 font-display text-2xl font-bold italic tracking-tight text-foreground/90 sm:text-4xl">
+            {title}
+          </p>
+        </motion.div>
       </div>
     </div>
   );
-  return external ? (
-    <a href={l.wiki} target="_blank" rel="noreferrer">
-      {inner}
-    </a>
-  ) : (
-    <Link href={`/drivers/${l.ref}`}>{inner}</Link>
-  );
-}
-
-function RailEndCard() {
-  return (
-    <Link
-      href="/drivers"
-      className="flex h-[62vh] max-h-[560px] w-[260px] shrink-0 flex-col items-center justify-center rounded-card border border-dashed border-white/15 text-center transition hover:border-f1-red/50"
-    >
-      <p className="font-display text-lg font-bold">The story continues</p>
-      <p className="mt-2 max-w-[70%] text-xs text-muted">
-        Explore every driver in the modern era, race by race.
-      </p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-f1-red">
-        All drivers <ArrowUpRight className="h-4 w-4" />
-      </span>
-    </Link>
-  );
 }
 
 /* ================================================================== */
-/*  3 · Pinned quote — full-bleed, lines reveal on scroll             */
+/*  Driver chapter — one legend owns the screen                       */
 /* ================================================================== */
 
-function PinnedQuote({ quote, image, mono = false }: { quote: (typeof QUOTES)[number]; image: string; mono?: boolean }) {
+function ChapterSection({ chapter: c, index }: { chapter: Chapter; index: number }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const reverse = index % 2 === 1;
 
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.06, 1.24]);
-  // photo is always visible (never pure black), brightest through the middle
-  const imgOpacity = useTransform(scrollYProgress, [0, 0.12, 0.85, 1], [0.35, 0.7, 0.7, 0.4]);
-  // reveal the quote and author early so there's little dead scroll
-  const qOpacity = useTransform(scrollYProgress, [0.08, 0.28], [0, 1]);
-  const qY = useTransform(scrollYProgress, [0.08, 0.28], [40, 0]);
-  const aOpacity = useTransform(scrollYProgress, [0.32, 0.48], [0, 1]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.08, 0.93, 1], [0, 1, 1, 0]);
+  const portraitY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
+  const portraitScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05]);
+  const nameX = useTransform(scrollYProgress, [0, 0.14], [reverse ? 48 : -48, 0]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  const quoteOpacity = useTransform(scrollYProgress, [0.68, 0.8], [0, 1]);
+  const quoteY = useTransform(scrollYProgress, [0.68, 0.8], [24, 0]);
+
+  const A_START = 0.26;
+  const A_END = 0.66;
+  const step = (A_END - A_START) / c.achievements.length;
+
+  const Cta = c.eraData ? Link : "a";
+  const ctaProps = c.eraData
+    ? { href: `/drivers/${c.ref}` }
+    : { href: c.wiki, target: "_blank", rel: "noreferrer" };
 
   return (
-    <section ref={ref} className="relative h-[170vh]">
-      <div className="sticky top-14 flex h-[calc(100vh-3.5rem)] items-center justify-center overflow-hidden bg-black">
+    <section ref={ref} className="relative h-[175vh]">
+      <div className="sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
+        {/* faint action-photo backdrop with parallax */}
         <motion.img
-          src={image}
+          src={c.action}
           alt=""
           aria-hidden
-          style={{ scale: imgScale, opacity: imgOpacity }}
-          className={cn("absolute inset-0 h-full w-full object-cover", mono && "grayscale")}
+          style={{ y: bgY }}
+          className="absolute inset-x-0 -inset-y-[6%] h-[112%] w-full object-cover opacity-[0.14]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/70" />
-        <div className="relative mx-auto max-w-4xl px-6 text-center">
-          <motion.p
-            style={{ opacity: qOpacity, y: qY }}
-            className="font-display text-3xl font-bold italic leading-tight text-white sm:text-5xl"
-          >
-            “{quote.text}”
-          </motion.p>
-          <motion.p
-            style={{ opacity: aOpacity }}
-            className="mt-8 text-sm font-semibold uppercase tracking-[0.35em] text-[#FFD700]"
-          >
-            {quote.author}
-          </motion.p>
-        </div>
-      </div>
-    </section>
-  );
-}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070606] via-[#070606]/70 to-[#070606]" />
+        <div
+          className="absolute inset-0"
+          style={{ background: reverse
+            ? "radial-gradient(45% 55% at 80% 50%, rgba(225,6,0,0.10), transparent 70%)"
+            : "radial-gradient(45% 55% at 20% 50%, rgba(225,6,0,0.10), transparent 70%)" }}
+          aria-hidden
+        />
 
-/* ================================================================== */
-/*  4 · Legendary moments                                             */
-/* ================================================================== */
-
-function MomentsSection() {
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#FFD700]">Folklore</p>
-        <h2 className="mt-1 font-display text-3xl font-bold italic tracking-tight sm:text-4xl">
-          Legendary Moments
-        </h2>
-      </motion.div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {MOMENTS.map((m, i) => (
-          <MomentCard key={m.title} moment={m} index={i} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function MomentCard({ moment: m, index }: { moment: (typeof MOMENTS)[number]; index: number }) {
-  const ref = useRef<HTMLAnchorElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-
-  return (
-    <motion.a
-      ref={ref}
-      href={m.wiki}
-      target="_blank"
-      rel="noreferrer"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.3) }}
-      className="group relative block h-72 overflow-hidden rounded-card border border-white/8 transition-[border-color] duration-500 hover:border-f1-red/40"
-    >
-      <motion.img
-        src={m.photo}
-        alt={m.title}
-        loading="lazy"
-        style={{ y: imgY }}
-        className="absolute inset-x-0 -inset-y-[8%] h-[116%] w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.06]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/10" />
-      <span className="absolute right-4 top-3 font-display text-5xl font-bold italic text-white/25 transition-colors duration-500 group-hover:text-[#FFD700]/60">
-        {m.year}
-      </span>
-      <div className="absolute inset-x-0 bottom-0 p-5">
-        <p className="font-display text-xl font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">{m.title}</p>
-        <p className="mt-1.5 text-xs leading-relaxed text-silver">{m.line}</p>
-      </div>
-    </motion.a>
-  );
-}
-
-/* ================================================================== */
-/*  5 · Decade timeline (interactive)                                 */
-/* ================================================================== */
-
-function Timeline() {
-  const [active, setActive] = useState(DECADES.length - 1);
-  const decade = DECADES[active];
-  const featured = decade.featured.map((r) => LEGENDS.find((l) => l.ref === r)!).filter(Boolean);
-
-  return (
-    <section className="py-16">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#FFD700]">The Timeline</p>
-        <h2 className="mt-1 font-display text-3xl font-bold italic tracking-tight sm:text-4xl">
-          Eight Decades of Speed
-        </h2>
-      </motion.div>
-
-      <div className="overflow-hidden rounded-card border border-white/8 bg-carbon-900/60">
-        <div className="flex gap-1 overflow-x-auto border-b border-white/5 p-2">
-          {DECADES.map((d, i) => (
-            <button
-              key={d.label}
-              onClick={() => setActive(i)}
-              className={cn(
-                "shrink-0 rounded-lg px-4 py-2 font-display text-sm font-bold transition-colors",
-                i === active ? "bg-f1-red text-white" : "text-muted hover:bg-white/5 hover:text-silver",
-              )}
-            >
-              {d.label}
-            </button>
-          ))}
-        </div>
-        <AnimatePresence mode="wait">
+        <motion.div
+          style={{ opacity: contentOpacity }}
+          className="relative mx-auto flex h-full max-w-7xl flex-col items-center justify-center gap-6 px-6 lg:flex-row lg:gap-14 lg:px-12"
+        >
+          {/* portrait — ~45% */}
           <motion.div
-            key={decade.label}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.32 }}
-            className="relative grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto]"
+            style={{ y: portraitY, scale: portraitScale }}
+            className={cn("relative hidden h-[56vh] w-[40%] shrink-0 lg:block", reverse ? "lg:order-2" : "lg:order-1")}
           >
-            {featured[0] && (
-              <img
-                src={featured[0].portrait}
-                alt=""
-                aria-hidden
-                className={cn(
-                  "pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 object-cover object-top opacity-[0.14] lg:block",
-                  featured[0].mono && "grayscale",
-                )}
-                style={{ maskImage: "linear-gradient(270deg, black 30%, transparent 95%)", WebkitMaskImage: "linear-gradient(270deg, black 30%, transparent 95%)" }}
-              />
-            )}
-            <div className="relative max-w-xl">
-              <p className="font-display text-5xl font-bold italic text-white/10">{decade.label}</p>
-              <h3 className="-mt-5 font-display text-2xl font-bold text-[#FFD700]/90">{decade.era}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-silver">{decade.blurb}</p>
-            </div>
-            <div className="relative flex gap-3">
-              {featured.map((l) => {
-                const inner = (
-                  <div className="group w-36 overflow-hidden rounded-xl border border-white/10 bg-black/40 transition-colors hover:border-[#FFD700]/40">
-                    <div className="h-40 overflow-hidden">
-                      <img
-                        src={l.portrait}
-                        alt={l.name}
-                        loading="lazy"
-                        className={cn("h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105", l.mono && "grayscale")}
-                      />
-                    </div>
-                    <div className="p-2.5">
-                      <p className="truncate text-xs font-bold">{l.name}</p>
-                      <p className="text-[10px] text-[#FFD700]">{l.titles}× champion</p>
-                    </div>
-                  </div>
-                );
-                return l.eraData ? (
-                  <Link key={l.ref} href={`/drivers/${l.ref}`}>{inner}</Link>
-                ) : (
-                  <a key={l.ref} href={l.wiki} target="_blank" rel="noreferrer">{inner}</a>
-                );
-              })}
-            </div>
+            <img
+              src={c.portrait}
+              alt={`${c.first} ${c.last}`}
+              className="h-full w-full object-cover object-top"
+              style={{
+                maskImage: "radial-gradient(120% 78% at 50% 42%, black 52%, transparent 92%)",
+                WebkitMaskImage: "radial-gradient(120% 78% at 50% 42%, black 52%, transparent 92%)",
+              }}
+            />
           </motion.div>
-        </AnimatePresence>
+
+          {/* content */}
+          <div className={cn("w-full lg:flex-1", reverse ? "lg:order-1" : "lg:order-2")}>
+            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.35em] text-[#FFD700]">
+              <span className="h-px w-8 bg-[#FFD700]/60" /> {c.era} · {c.eraTitle}
+            </p>
+            <motion.h2
+              style={{ x: nameX }}
+              className="mt-2 font-display text-4xl font-bold uppercase leading-[0.9] tracking-tight sm:text-6xl"
+            >
+              {c.first} <span className="text-f1-red">{c.last}</span>
+            </motion.h2>
+            <p className="mt-1.5 text-xs uppercase tracking-[0.2em] text-silver">
+              {c.nationality} · {c.years} · <span className="text-[#FFD700]/90">{c.epithet}</span>
+            </p>
+            <p className="mt-3 max-w-lg text-[13px] leading-relaxed text-silver">{c.bio}</p>
+
+            <ul className="mt-4 space-y-1.5">
+              {c.achievements.map((a, i) => (
+                <AchievementRow
+                  key={a.label}
+                  progress={scrollYProgress}
+                  from={A_START + i * step}
+                  to={A_START + i * step + step * 0.85}
+                  achievement={a}
+                />
+              ))}
+            </ul>
+
+            <motion.blockquote
+              style={{ opacity: quoteOpacity, y: quoteY }}
+              className="mt-4 border-l-2 border-f1-red/60 pl-4 font-display text-base font-semibold italic text-foreground/90 sm:text-lg"
+            >
+              “{c.quote}”
+            </motion.blockquote>
+
+            <Cta
+              {...ctaProps}
+              className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:text-f1-red"
+            >
+              {c.eraData ? "Explore the full career" : "Read the story"}
+              <span aria-hidden>→</span>
+            </Cta>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
+function AchievementRow({
+  progress,
+  from,
+  to,
+  achievement: a,
+}: {
+  progress: MotionValue<number>;
+  from: number;
+  to: number;
+  achievement: Achievement;
+}) {
+  const opacity = useTransform(progress, [from, to], [0, 1]);
+  const x = useTransform(progress, [from, to], [-24, 0]);
+  return (
+    <motion.li style={{ opacity, x }} className="flex items-baseline gap-2.5">
+      <Trophy className="h-3 w-3 shrink-0 translate-y-0.5 text-[#FFD700]" />
+      <span>
+        <span className="font-display text-base font-bold">{a.label}</span>
+        {a.sub ? <span className="ml-2 text-[11px] text-muted">{a.sub}</span> : null}
+      </span>
+    </motion.li>
+  );
+}
+
 /* ================================================================== */
-/*  6 · Records — the exhibit hall (same data)                        */
+/*  Finish line → Hall of Records                                     */
 /* ================================================================== */
 
-function RecordsSection({
+function FinishLine() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const opacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 1]);
+  const scale = useTransform(scrollYProgress, [0.2, 0.6], [0.9, 1]);
+
+  return (
+    <div ref={ref} className="relative flex h-[70vh] items-center justify-center">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-16 -translate-y-1/2 opacity-[0.08]"
+        style={{
+          backgroundImage: "repeating-conic-gradient(#fff 0% 25%, transparent 0% 50%)",
+          backgroundSize: "28px 28px",
+        }}
+        aria-hidden
+      />
+      <motion.div style={{ opacity, scale }} className="relative text-center">
+        <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.5em] text-[#FFD700]">
+          <Flag className="h-4 w-4" /> The Chequered Flag
+        </p>
+        <h2 className="mt-4 font-display text-4xl font-bold uppercase italic tracking-tight sm:text-6xl">
+          Hall of Records
+        </h2>
+        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+          Every legend leaves a number behind. These are the marks that still stand in the modern era.
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  Hall of Records — the existing data                               */
+/* ================================================================== */
+
+function HallOfRecords({
   data,
   isLoading,
 }: {
   data: ReturnType<typeof useHallOfFame>["data"];
   isLoading: boolean;
 }) {
+  if (isLoading || !data) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-72" />
+        ))}
+      </div>
+    );
+  }
   return (
-    <section className="pt-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-8 text-center"
-      >
-        <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#FFD700]">The Record Books</p>
-        <h2 className="mt-2 font-display text-3xl font-bold uppercase italic tracking-tight sm:text-4xl">
-          Where Numbers Become Monuments
-        </h2>
-        <p className="mt-2 text-sm text-muted">Modern-era leaders{data ? ` · ${data.seasons_covered}` : ""}</p>
-      </motion.div>
-
-      {isLoading || !data ? (
+    <div className="space-y-10">
+      <div>
+        <p className="mb-1 text-xs font-bold uppercase tracking-[0.3em] text-[#FFD700]">Drivers</p>
+        <p className="mb-5 text-sm text-muted">Modern-era leaders · {data.seasons_covered}</p>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-72" />
+          {data.drivers.map((cat, i) => (
+            <RecordCard key={cat.key} category={cat} kind="drivers" index={i} />
           ))}
         </div>
-      ) : (
-        <div className="space-y-10">
-          <div>
-            <h3 className="mb-4 font-display text-lg font-bold text-silver">Drivers</h3>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {data.drivers.map((cat, i) => (
-                <RecordCard key={cat.key} category={cat} kind="drivers" index={i} />
-              ))}
-            </div>
-          </div>
-          <div>
-            <h3 className="mb-4 font-display text-lg font-bold text-silver">Constructors</h3>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {data.constructors.map((cat, i) => (
-                <RecordCard key={cat.key} category={cat} kind="constructors" index={i} />
-              ))}
-            </div>
-          </div>
+      </div>
+      <div>
+        <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-[#FFD700]">Constructors</p>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {data.constructors.map((cat, i) => (
+            <RecordCard key={cat.key} category={cat} kind="constructors" index={i} />
+          ))}
         </div>
-      )}
-    </section>
+      </div>
+    </div>
   );
 }
 

@@ -105,7 +105,7 @@ export const LEGENDS: Legend[] = [
     titles: 7,
     nationality: "German",
     bio: "Rebuilt Ferrari in his image and delivered five straight titles in red.",
-    portrait: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Ferrari_Vodafone_Schumacher_%282%29.jpg/960px-Ferrari_Vodafone_Schumacher_%282%29.jpg",
+    portrait: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Michael_Schumacher_2010_Malaysia.jpg/960px-Michael_Schumacher_2010_Malaysia.jpg",
     eraData: false,
     wiki: "https://en.wikipedia.org/wiki/Michael_Schumacher",
   },
@@ -239,6 +239,181 @@ export const DECADES: Decade[] = [
   { label: "2000s", era: "The Red Dynasty", blurb: "Ferrari and Schumacher win five straight. Then a 24-year-old Spaniard ends the reign.", featured: ["michael_schumacher", "alonso"] },
   { label: "2010s", era: "Hybrid Supremacy", blurb: "Vettel's four in a row for Red Bull, then Mercedes and Hamilton turn dominance into an art form.", featured: ["vettel", "hamilton"] },
   { label: "2020s", era: "The Changing of the Guard", blurb: "Verstappen against Hamilton in the closest fight in decades — and a new generation arriving fast.", featured: ["max_verstappen", "hamilton"] },
+];
+
+/* ---- Documentary chapters: one legend per full screen ---- */
+
+export interface Achievement {
+  label: string;
+  sub?: string;
+}
+
+export interface Chapter {
+  ref: string;
+  first: string;
+  last: string;
+  epithet: string;
+  era: string;
+  eraTitle: string;
+  years: string;
+  nationality: string;
+  titles: number;
+  bio: string;
+  portrait: string;
+  action: string; // race/action photograph
+  quote: string;
+  achievements: Achievement[];
+  eraData: boolean;
+  wiki: string;
+}
+
+const byRef = (ref: string) => LEGENDS.find((l) => l.ref === ref)!;
+
+export const CHAPTERS: Chapter[] = [
+  {
+    ref: "senna",
+    first: "Ayrton",
+    last: "Senna",
+    epithet: "The Rain Master",
+    era: "The 1980s",
+    eraTitle: "The Rise of a Legend",
+    years: "1984 – 1994",
+    nationality: "Brazilian",
+    titles: 3,
+    bio: "Mercurial, magnetic, untouchable in the wet. Ayrton Senna didn't just drive Formula One — he transcended it. Three titles, a rivalry that split the sport, and a mystique that has never faded.",
+    portrait: byRef("senna").portrait,
+    action: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Ayrton_Senna_McLaren_MP4-6_1991_United_States.jpg/1280px-Ayrton_Senna_McLaren_MP4-6_1991_United_States.jpg",
+    quote: "If you no longer go for a gap that exists, you are no longer a racing driver.",
+    achievements: [
+      { label: "3× World Champion", sub: "1988 · 1990 · 1991" },
+      { label: "41 Grand Prix Wins" },
+      { label: "65 Pole Positions", sub: "a record that stood for years" },
+      { label: "19 Fastest Laps" },
+      { label: "Six wins around Monaco", sub: "the King of the streets" },
+    ],
+    eraData: false,
+    wiki: byRef("senna").wiki,
+  },
+  {
+    ref: "michael_schumacher",
+    first: "Michael",
+    last: "Schumacher",
+    epithet: "The Ferrari Icon",
+    era: "The 1990s",
+    eraTitle: "The Ferrari Revolution",
+    years: "1991 – 2012",
+    nationality: "German",
+    titles: 7,
+    bio: "He arrived and rewrote what was possible. Michael Schumacher dragged Ferrari back to the summit and kept it there — five titles in a row, delivered with a relentlessness the sport had never seen.",
+    portrait: byRef("michael_schumacher").portrait,
+    action: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Michael_Schumacher_Ferrari_2004.jpg/1280px-Michael_Schumacher_Ferrari_2004.jpg",
+    quote: "Once something is a passion, the motivation is there.",
+    achievements: [
+      { label: "7× World Champion", sub: "a record for a generation" },
+      { label: "91 Grand Prix Wins" },
+      { label: "68 Pole Positions" },
+      { label: "77 Fastest Laps" },
+      { label: "5 straight titles with Ferrari", sub: "2000 – 2004" },
+    ],
+    eraData: false,
+    wiki: byRef("michael_schumacher").wiki,
+  },
+  {
+    ref: "hamilton",
+    first: "Lewis",
+    last: "Hamilton",
+    epithet: "The Record Breaker",
+    era: "The 2010s",
+    eraTitle: "The Hybrid Era",
+    years: "2007 – present",
+    nationality: "British",
+    titles: 7,
+    bio: "From a go-kart track in Stevenage to the top of every record book. Lewis Hamilton turned relentless excellence into an art form — and became the most successful driver the sport has ever seen.",
+    portrait: byRef("hamilton").portrait,
+    action: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Lewis_Hamilton%2C_McLaren_MP4-23_Mercedes-Benz.jpg/1280px-Lewis_Hamilton%2C_McLaren_MP4-23_Mercedes-Benz.jpg",
+    quote: "Still I rise.",
+    achievements: [
+      { label: "7× World Champion", sub: "tied for the most ever" },
+      { label: "105 Grand Prix Wins", sub: "more than anyone in history" },
+      { label: "104 Pole Positions", sub: "the all-time record" },
+      { label: "67 Fastest Laps" },
+      { label: "202 Podiums", sub: "on the box more than any driver" },
+    ],
+    eraData: true,
+    wiki: byRef("hamilton").wiki,
+  },
+  {
+    ref: "vettel",
+    first: "Sebastian",
+    last: "Vettel",
+    epithet: "The Red Bull Reign",
+    era: "The Red Bull Years",
+    eraTitle: "Four in a Row",
+    years: "2007 – 2022",
+    nationality: "German",
+    titles: 4,
+    bio: "Four titles before most drivers find their feet. Sebastian Vettel and Red Bull owned the early 2010s with pole after pole — then he showed the grid how to lose, and lead, with grace.",
+    portrait: byRef("vettel").portrait,
+    action: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Formula_One_Grand_Prix_Singapore_2013_-_Sebastian_Vettel_in_Red_Bull_Renault_1.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Sebastian_Vettel_in_Red_Bull_Renault_1.jpg",
+    quote: "In the end, you always race against yourself.",
+    achievements: [
+      { label: "4× World Champion", sub: "2010 – 2013, unbroken" },
+      { label: "53 Grand Prix Wins" },
+      { label: "57 Pole Positions" },
+      { label: "38 Fastest Laps" },
+      { label: "Youngest champion of his time", sub: "at just 23" },
+    ],
+    eraData: true,
+    wiki: byRef("vettel").wiki,
+  },
+  {
+    ref: "alonso",
+    first: "Fernando",
+    last: "Alonso",
+    epithet: "The Relentless One",
+    era: "The 2000s",
+    eraTitle: "Ending the Dynasty",
+    years: "2001 – present",
+    nationality: "Spanish",
+    titles: 2,
+    bio: "Two decades at the sharp end, extracting the impossible from every car he has touched. Fernando Alonso ended Ferrari's reign as the sport's youngest champion — and is still the benchmark for racing intelligence.",
+    portrait: byRef("alonso").portrait,
+    action: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Fernando_Alonso_-_Renault_R26_-_Monaco_Grand_Prix_2006.jpg/1280px-Fernando_Alonso_-_Renault_R26_-_Monaco_Grand_Prix_2006.jpg",
+    quote: "I race to win, not to take part.",
+    achievements: [
+      { label: "2× World Champion", sub: "2005 · 2006" },
+      { label: "32 Grand Prix Wins" },
+      { label: "22 Pole Positions" },
+      { label: "23 Fastest Laps" },
+      { label: "20+ seasons and counting", sub: "the great survivor" },
+    ],
+    eraData: true,
+    wiki: byRef("alonso").wiki,
+  },
+  {
+    ref: "max_verstappen",
+    first: "Max",
+    last: "Verstappen",
+    epithet: "The New Generation",
+    era: "The 2020s",
+    eraTitle: "The Changing of the Guard",
+    years: "2015 – present",
+    nationality: "Dutch",
+    titles: 4,
+    bio: "Fearless from the very first lap. Max Verstappen became the youngest race winner in history, then turned raw speed into total domination — and he is only getting started.",
+    portrait: byRef("max_verstappen").portrait,
+    action: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Max_Verstappen_%28Austin_2021%29.jpg/1280px-Max_Verstappen_%28Austin_2021%29.jpg",
+    quote: "You have to risk it to get the biscuit.",
+    achievements: [
+      { label: "4× World Champion", sub: "2021 – 2024" },
+      { label: "63 Grand Prix Wins" },
+      { label: "44 Pole Positions" },
+      { label: "34 Fastest Laps" },
+      { label: "19 wins in a single season", sub: "2023 — a new record" },
+    ],
+    eraData: true,
+    wiki: byRef("max_verstappen").wiki,
+  },
 ];
 
 /** Mini portraits for record holders (drivers table headshots), keyed by ref. */
