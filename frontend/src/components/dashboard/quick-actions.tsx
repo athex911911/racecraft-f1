@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CalendarDays,
-  GitCompareArrows,
-  Globe2,
-  History,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import { CalendarDays, GitCompareArrows, Globe2, History, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { GlassCard } from "@/components/ui/glass-card";
@@ -29,14 +22,13 @@ const ACTIONS = [
   { href: "/circuits", label: "Explore Circuits", desc: "Every track, mapped", icon: Globe2 },
   { href: "/history", label: "Historical Explorer", desc: "Results back to 1950", icon: History },
   { href: "/calendar", label: "Race Calendar", desc: "Full season schedule", icon: CalendarDays },
-  { href: "/hall-of-fame", label: "Hall of Fame", desc: "All-time records", icon: Trophy },
 ];
 
 export function QuickActions() {
   return (
     <section>
       <SectionHeading title="Quick Actions" />
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
         {ACTIONS.map(({ href, label, desc, icon: Icon }) => (
           <Link key={href} href={href}>
             <GlassCard hover className="group relative h-full overflow-hidden p-5">

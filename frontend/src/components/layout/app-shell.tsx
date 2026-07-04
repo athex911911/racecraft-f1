@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
   Menu,
   Sparkles,
-  Trophy,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -48,7 +47,6 @@ const NAV_GROUPS: { label: string | null; items: NavItem[] }[] = [
     items: [
       { href: "/history", label: "History", icon: History },
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
-      { href: "/hall-of-fame", label: "Hall of Fame", icon: Trophy },
     ],
   },
 ];

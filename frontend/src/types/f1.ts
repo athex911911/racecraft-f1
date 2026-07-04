@@ -378,28 +378,6 @@ export interface RaceDetail {
   results: RaceResultRow[];
 }
 
-// --- Hall of Fame (Phase 2) ---
-
-export interface RecordEntry {
-  ref: string | null;
-  label: string;
-  color: string | null;
-  value: number;
-  display: string;
-}
-
-export interface RecordCategory {
-  key: string;
-  title: string;
-  entries: RecordEntry[];
-}
-
-export interface HallOfFame {
-  seasons_covered: string;
-  drivers: RecordCategory[];
-  constructors: RecordCategory[];
-}
-
 // --- Compare (Phase 2) ---
 
 export interface HeadToHead {

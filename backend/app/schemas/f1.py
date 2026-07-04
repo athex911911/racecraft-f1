@@ -386,29 +386,6 @@ class RaceDetailOut(BaseModel):
     results: list[RaceResultRow]
 
 
-# --- Hall of Fame (Phase 2) ---
-
-
-class RecordEntry(BaseModel):
-    ref: str | None  # driver_ref / constructor_ref for linking, when applicable
-    label: str
-    color: str | None
-    value: float
-    display: str  # formatted value
-
-
-class RecordCategory(BaseModel):
-    key: str
-    title: str
-    entries: list[RecordEntry]
-
-
-class HallOfFameOut(BaseModel):
-    seasons_covered: str  # e.g. "2014–2026"
-    drivers: list[RecordCategory]
-    constructors: list[RecordCategory]
-
-
 # --- Driver vs driver comparison (Phase 2) ---
 
 

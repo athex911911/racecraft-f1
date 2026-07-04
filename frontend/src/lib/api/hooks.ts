@@ -15,7 +15,6 @@ import type {
   DriverDetail,
   DriverListItem,
   DriverStanding,
-  HallOfFame,
   HealthStatus,
   NextRace,
   RaceDetail,
@@ -155,13 +154,6 @@ export function useRaceDetail(raceId: number | undefined) {
     queryKey: ["race-detail", raceId],
     queryFn: () => apiGet<RaceDetail>(`/api/v1/races/${raceId}`),
     enabled: raceId != null,
-  });
-}
-
-export function useHallOfFame() {
-  return useQuery({
-    queryKey: ["records"],
-    queryFn: () => apiGet<HallOfFame>("/api/v1/records"),
   });
 }
 
