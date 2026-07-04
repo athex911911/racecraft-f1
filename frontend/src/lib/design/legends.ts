@@ -243,7 +243,9 @@ export const DECADES: Decade[] = [
 
 /* ---- Documentary chapters: one legend per full screen ---- */
 
-export interface Achievement {
+export interface Stat {
+  icon: "trophy" | "wins" | "poles" | "fl" | "podiums";
+  value: string;
   label: string;
   sub?: string;
 }
@@ -258,11 +260,14 @@ export interface Chapter {
   years: string;
   nationality: string;
   titles: number;
+  accent: string; // per-legend accent colour
   bio: string;
+  standfirst: string; // bold editorial intro
+  body: string[]; // article paragraphs
   portrait: string;
-  action: string; // race/action photograph
+  action: string; // race/action photograph (their car)
   quote: string;
-  achievements: Achievement[];
+  stats: Stat[];
   eraData: boolean;
   wiki: string;
 }
@@ -275,21 +280,27 @@ export const CHAPTERS: Chapter[] = [
     first: "Ayrton",
     last: "Senna",
     epithet: "The Rain Master",
+    accent: "#E8B54D",
     era: "The 1980s",
     eraTitle: "The Rise of a Legend",
     years: "1984 – 1994",
     nationality: "Brazilian",
     titles: 3,
     bio: "Mercurial, magnetic, untouchable in the wet. Ayrton Senna didn't just drive Formula One — he transcended it. Three titles, a rivalry that split the sport, and a mystique that has never faded.",
+    standfirst:
+      "He drove as if the car were an extension of his will, and raced as if the result were already written. Three decades on, Ayrton Senna remains the standard against which genius is measured.",
+    body: [
+      "There was the speed, and then there was everything else. In the wet at Donington in 1993 he passed four cars on the opening lap and simply vanished up the road, turning a grand prix into a private demonstration. The myth was never only about lap times — it was the intensity, the introspection, the sense of a man reaching for something beyond the sport.",
+      "His rivalry with Alain Prost split Formula One down the middle and defined an era. Six victories through the walls of Monaco earned him a throne that has never truly been vacated. When he was lost at Imola in 1994, the sport changed forever: safer, more sombre, and forever aware of what it had been given, and what it had taken away.",
+    ],
     portrait: byRef("senna").portrait,
     action: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Ayrton_Senna_McLaren_MP4-6_1991_United_States.jpg/1280px-Ayrton_Senna_McLaren_MP4-6_1991_United_States.jpg",
     quote: "If you no longer go for a gap that exists, you are no longer a racing driver.",
-    achievements: [
-      { label: "3× World Champion", sub: "1988 · 1990 · 1991" },
-      { label: "41 Grand Prix Wins" },
-      { label: "65 Pole Positions", sub: "a record that stood for years" },
-      { label: "19 Fastest Laps" },
-      { label: "Six wins around Monaco", sub: "the King of the streets" },
+    stats: [
+      { icon: "trophy", value: "3", label: "World Championships", sub: "1988, 1990, 1991" },
+      { icon: "wins", value: "41", label: "Grand Prix Wins" },
+      { icon: "poles", value: "65", label: "Pole Positions" },
+      { icon: "fl", value: "19", label: "Fastest Laps" },
     ],
     eraData: false,
     wiki: byRef("senna").wiki,
@@ -299,21 +310,27 @@ export const CHAPTERS: Chapter[] = [
     first: "Michael",
     last: "Schumacher",
     epithet: "The Ferrari Icon",
+    accent: "#DC0000",
     era: "The 1990s",
     eraTitle: "The Ferrari Revolution",
     years: "1991 – 2012",
     nationality: "German",
     titles: 7,
     bio: "He arrived and rewrote what was possible. Michael Schumacher dragged Ferrari back to the summit and kept it there — five titles in a row, delivered with a relentlessness the sport had never seen.",
+    standfirst:
+      "He arrived with a reputation and left with the record books rewritten. Michael Schumacher didn't just win with Ferrari — he built a machine, in every sense, and made it invincible.",
+    body: [
+      "Before Schumacher, Ferrari had waited twenty-one years for a drivers' title. He ended the drought, then turned scarcity into surplus: five championships in a row between 2000 and 2004, a level of dominance the sport had never witnessed. He drove every lap of every session as though it were qualifying, and demanded the same of everyone around him.",
+      "The numbers — ninety-one wins, sixty-eight poles, seven crowns — barely capture the relentlessness. He rebuilt a team in his own image: methodical, obsessive, unbreakable. Critics pointed to the ruthlessness; history points to the results. When he finally walked away, he left behind not just trophies, but a template every champion since has tried to follow.",
+    ],
     portrait: byRef("michael_schumacher").portrait,
     action: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Michael_Schumacher_Ferrari_2004.jpg/1280px-Michael_Schumacher_Ferrari_2004.jpg",
     quote: "Once something is a passion, the motivation is there.",
-    achievements: [
-      { label: "7× World Champion", sub: "a record for a generation" },
-      { label: "91 Grand Prix Wins" },
-      { label: "68 Pole Positions" },
-      { label: "77 Fastest Laps" },
-      { label: "5 straight titles with Ferrari", sub: "2000 – 2004" },
+    stats: [
+      { icon: "trophy", value: "7", label: "World Championships", sub: "1994, 1995, 2000–2004" },
+      { icon: "wins", value: "91", label: "Grand Prix Wins" },
+      { icon: "poles", value: "68", label: "Pole Positions" },
+      { icon: "fl", value: "77", label: "Fastest Laps" },
     ],
     eraData: false,
     wiki: byRef("michael_schumacher").wiki,
@@ -323,21 +340,27 @@ export const CHAPTERS: Chapter[] = [
     first: "Lewis",
     last: "Hamilton",
     epithet: "The Record Breaker",
+    accent: "#00D2BE",
     era: "The 2010s",
     eraTitle: "The Hybrid Era",
     years: "2007 – present",
     nationality: "British",
     titles: 7,
     bio: "From a go-kart track in Stevenage to the top of every record book. Lewis Hamilton turned relentless excellence into an art form — and became the most successful driver the sport has ever seen.",
+    standfirst:
+      "From a council estate in Stevenage to the summit of every record that matters. Lewis Hamilton turned relentless self-belief into the most decorated career the sport has ever seen.",
+    body: [
+      "He won in his first season and never stopped. Where others peaked and faded, Hamilton kept finding another gear — reinventing himself through rule changes, teammates and eras, until the all-time records for wins and pole positions simply belonged to him. On his day, in the wet or under pressure, he remains untouchable.",
+      "The legacy runs beyond the track. Hamilton used the biggest platform in motorsport to push the sport to look more like the world it races through. Seven titles tie the record; the influence is his alone. Now, in Ferrari red, he chases the number that would put him beyond everyone — an eighth.",
+    ],
     portrait: byRef("hamilton").portrait,
     action: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Lewis_Hamilton%2C_McLaren_MP4-23_Mercedes-Benz.jpg/1280px-Lewis_Hamilton%2C_McLaren_MP4-23_Mercedes-Benz.jpg",
     quote: "Still I rise.",
-    achievements: [
-      { label: "7× World Champion", sub: "tied for the most ever" },
-      { label: "105 Grand Prix Wins", sub: "more than anyone in history" },
-      { label: "104 Pole Positions", sub: "the all-time record" },
-      { label: "67 Fastest Laps" },
-      { label: "202 Podiums", sub: "on the box more than any driver" },
+    stats: [
+      { icon: "trophy", value: "7", label: "World Championships", sub: "2008, 2014–15, 2017–20" },
+      { icon: "wins", value: "105", label: "Grand Prix Wins" },
+      { icon: "poles", value: "104", label: "Pole Positions" },
+      { icon: "podiums", value: "202", label: "Podium Finishes" },
     ],
     eraData: true,
     wiki: byRef("hamilton").wiki,
@@ -347,21 +370,27 @@ export const CHAPTERS: Chapter[] = [
     first: "Sebastian",
     last: "Vettel",
     epithet: "The Red Bull Reign",
+    accent: "#5E8BD8",
     era: "The Red Bull Years",
     eraTitle: "Four in a Row",
     years: "2007 – 2022",
     nationality: "German",
     titles: 4,
     bio: "Four titles before most drivers find their feet. Sebastian Vettel and Red Bull owned the early 2010s with pole after pole — then he showed the grid how to lose, and lead, with grace.",
+    standfirst:
+      "Four titles before most drivers find their rhythm — then a second act defined by grace. Sebastian Vettel was the prodigy who grew into the sport's conscience.",
+    body: [
+      "In the early 2010s, Red Bull and Vettel were a metronome of dominance: pole, lights, gone. Four consecutive championships, the last sealed with nine straight wins, made him the youngest quadruple champion in history. He drove with a joy that spilled over the radio, naming his cars and celebrating like a fan who couldn't believe his luck.",
+      "When the winning slowed, the man grew. Vettel became a statesman of the paddock — thoughtful, principled, unafraid to speak. He lost with the same dignity he had won with, and left the sport better than he found it. Fifty-three victories tell one story; the respect of everyone he raced tells a richer one.",
+    ],
     portrait: byRef("vettel").portrait,
     action: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Formula_One_Grand_Prix_Singapore_2013_-_Sebastian_Vettel_in_Red_Bull_Renault_1.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Sebastian_Vettel_in_Red_Bull_Renault_1.jpg",
     quote: "In the end, you always race against yourself.",
-    achievements: [
-      { label: "4× World Champion", sub: "2010 – 2013, unbroken" },
-      { label: "53 Grand Prix Wins" },
-      { label: "57 Pole Positions" },
-      { label: "38 Fastest Laps" },
-      { label: "Youngest champion of his time", sub: "at just 23" },
+    stats: [
+      { icon: "trophy", value: "4", label: "World Championships", sub: "2010–2013" },
+      { icon: "wins", value: "53", label: "Grand Prix Wins" },
+      { icon: "poles", value: "57", label: "Pole Positions" },
+      { icon: "fl", value: "38", label: "Fastest Laps" },
     ],
     eraData: true,
     wiki: byRef("vettel").wiki,
@@ -371,21 +400,27 @@ export const CHAPTERS: Chapter[] = [
     first: "Fernando",
     last: "Alonso",
     epithet: "The Relentless One",
+    accent: "#E6A817",
     era: "The 2000s",
     eraTitle: "Ending the Dynasty",
     years: "2001 – present",
     nationality: "Spanish",
     titles: 2,
     bio: "Two decades at the sharp end, extracting the impossible from every car he has touched. Fernando Alonso ended Ferrari's reign as the sport's youngest champion — and is still the benchmark for racing intelligence.",
+    standfirst:
+      "Two titles, two decades, and a competitive fire that refuses to cool. Fernando Alonso is the benchmark against which racecraft itself is measured.",
+    body: [
+      "In 2005, a twenty-four-year-old Spaniard did what no one had managed: he ended Schumacher and Ferrari's reign, and did it again the year after. It should have been the beginning of a dynasty. Instead it became the opening chapter of the sport's great what-if — a career of brilliance often spent in cars unworthy of it.",
+      "And still he stays, because the alternative is unthinkable to him. More than twenty seasons in, Alonso remains a reference point for wheel-to-wheel genius, dragging results from machinery that has no business delivering them. The titles number two; the talent has always suggested far more.",
+    ],
     portrait: byRef("alonso").portrait,
     action: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Fernando_Alonso_-_Renault_R26_-_Monaco_Grand_Prix_2006.jpg/1280px-Fernando_Alonso_-_Renault_R26_-_Monaco_Grand_Prix_2006.jpg",
     quote: "I race to win, not to take part.",
-    achievements: [
-      { label: "2× World Champion", sub: "2005 · 2006" },
-      { label: "32 Grand Prix Wins" },
-      { label: "22 Pole Positions" },
-      { label: "23 Fastest Laps" },
-      { label: "20+ seasons and counting", sub: "the great survivor" },
+    stats: [
+      { icon: "trophy", value: "2", label: "World Championships", sub: "2005, 2006" },
+      { icon: "wins", value: "32", label: "Grand Prix Wins" },
+      { icon: "poles", value: "22", label: "Pole Positions" },
+      { icon: "podiums", value: "106", label: "Podium Finishes" },
     ],
     eraData: true,
     wiki: byRef("alonso").wiki,
@@ -395,21 +430,27 @@ export const CHAPTERS: Chapter[] = [
     first: "Max",
     last: "Verstappen",
     epithet: "The New Generation",
+    accent: "#E10600",
     era: "The 2020s",
     eraTitle: "The Changing of the Guard",
     years: "2015 – present",
     nationality: "Dutch",
     titles: 4,
     bio: "Fearless from the very first lap. Max Verstappen became the youngest race winner in history, then turned raw speed into total domination — and he is only getting started.",
+    standfirst:
+      "Fearless from his very first lap, ruthless ever since. Max Verstappen turned raw, generational speed into total domination — and he is only getting started.",
+    body: [
+      "He became the youngest race winner in history on his Red Bull debut, and spent the years since making the extraordinary look routine. The 2021 title, decided on the final lap of the final race, announced a new era. What followed was a demonstration: nineteen wins in a single season, records tumbling, a driver operating in a category of his own.",
+      "There is no wasted motion, no obvious weakness — just speed, aggression and an almost unnerving certainty. Rivals talk of racing for second. At an age when many are still learning, Verstappen is already among the most complete drivers the sport has produced, and the record book is his to fill.",
+    ],
     portrait: byRef("max_verstappen").portrait,
     action: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Max_Verstappen_%28Austin_2021%29.jpg/1280px-Max_Verstappen_%28Austin_2021%29.jpg",
     quote: "You have to risk it to get the biscuit.",
-    achievements: [
-      { label: "4× World Champion", sub: "2021 – 2024" },
-      { label: "63 Grand Prix Wins" },
-      { label: "44 Pole Positions" },
-      { label: "34 Fastest Laps" },
-      { label: "19 wins in a single season", sub: "2023 — a new record" },
+    stats: [
+      { icon: "trophy", value: "4", label: "World Championships", sub: "2021–2024" },
+      { icon: "wins", value: "63", label: "Grand Prix Wins" },
+      { icon: "poles", value: "44", label: "Pole Positions" },
+      { icon: "podiums", value: "112", label: "Podium Finishes" },
     ],
     eraData: true,
     wiki: byRef("max_verstappen").wiki,

@@ -1,417 +1,374 @@
 "use client";
 
-import { motion, useMotionValue, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { ChevronDown, Crown, Flag, Trophy } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, ChevronDown, Crown, Flag, Gauge, Medal, Timer, Trophy } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHallOfFame } from "@/lib/api/hooks";
-import { CHAPTERS, RECORD_PORTRAITS, type Achievement, type Chapter } from "@/lib/design/legends";
+import { CHAPTERS, RECORD_PORTRAITS, type Chapter, type Stat } from "@/lib/design/legends";
 import { cn } from "@/lib/utils";
 import type { RecordCategory, RecordEntry } from "@/types/f1";
 
+const STAT_ICONS = { trophy: Trophy, wins: Flag, poles: Gauge, fl: Timer, podiums: Medal };
+const START_PAGE = 4; // features begin on page 4
+
 /* ================================================================== */
-/*  Page — a scrolling documentary                                    */
+/*  Magazine                                                          */
 /* ================================================================== */
 
 export default function HallOfFamePage() {
   const { data, isLoading } = useHallOfFame();
 
   return (
-    <div className="-mx-4 -my-6 bg-[#070606] sm:-mx-6 lg:-mx-8">
-      <Particles />
-      <Intro />
+    <div className="-mx-4 -my-6 bg-[#0b0a0a] text-foreground sm:-mx-6 lg:-mx-8">
+      <Cover />
+      <Contents />
       {CHAPTERS.map((c, i) => (
-        <div key={c.ref}>
-          <RacingLine era={c.era} title={c.eraTitle} flip={i % 2 === 1} />
-          <ChapterSection chapter={c} index={i} />
-        </div>
+        <Feature key={c.ref} chapter={c} index={i} page={START_PAGE + i * 2} />
       ))}
-      <FinishLine />
-      <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <HallOfRecords data={data} isLoading={isLoading} />
-        <p className="mt-10 text-center text-[11px] text-muted">
-          Career achievements above are all-time records. The statistics in the Hall of Records are
-          computed from the ingested era{data ? ` (${data.seasons_covered})` : ""}.
-        </p>
+      <ByTheNumbers data={data} isLoading={isLoading} page={START_PAGE + CHAPTERS.length * 2} />
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  Cover                                                             */
+/* ================================================================== */
+
+function Cover() {
+  const hero = CHAPTERS[0].action;
+  const lines = [
+    { n: "01", t: "Senna", d: "The Rain Master, and the myth that never faded" },
+    { n: "02", t: "Schumacher", d: "How one man built an empire in red" },
+    { n: "03", t: "Hamilton", d: "Seven titles — and the chase for eight" },
+    { n: "06", t: "Verstappen", d: "The new era arrives, all at once" },
+  ];
+  return (
+    <section className="relative flex h-screen flex-col overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={hero} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[70%_center]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0b0a0a] via-[#0b0a0a]/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a0a] via-transparent to-[#0b0a0a]/80" />
+
+      {/* masthead bar */}
+      <div className="relative z-10 flex items-center justify-between border-b border-white/15 px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-silver sm:px-10">
+        <span>F1 Insight</span>
+        <span className="text-f1-red">Special Collector's Edition</span>
+        <span>No. 01 · 2026</span>
       </div>
-    </div>
-  );
-}
 
-/* ================================================================== */
-/*  Ambient — drifting particles (very subtle)                        */
-/* ================================================================== */
-
-function Particles() {
-  const dots = Array.from({ length: 22 });
-  return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
-      {dots.map((_, i) => {
-        const left = (i * 47) % 100;
-        const size = 1 + (i % 3);
-        const dur = 14 + (i % 7) * 3;
-        const delay = (i % 5) * 2;
-        return (
-          <motion.span
-            key={i}
-            className="absolute rounded-full bg-white/20"
-            style={{ left: `${left}%`, width: size, height: size }}
-            initial={{ y: "110vh", opacity: 0 }}
-            animate={{ y: "-10vh", opacity: [0, 0.5, 0] }}
-            transition={{ duration: dur, delay, repeat: Infinity, ease: "linear" }}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-/* ================================================================== */
-/*  Intro                                                             */
-/* ================================================================== */
-
-function Intro() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const cue = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-
-  return (
-    <section ref={ref} className="relative flex h-screen items-center justify-center">
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: "radial-gradient(60% 50% at 50% 40%, rgba(225,6,0,0.10), transparent 70%)" }}
-        aria-hidden
-      />
-      <motion.div style={{ y, opacity }} className="relative z-10 px-6 text-center">
-        <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.5em] text-[#FFD700]">
-          <Trophy className="h-4 w-4" /> Hall of Fame
-        </p>
-        <h1 className="mt-6 font-display text-5xl font-bold uppercase italic leading-[0.95] tracking-tight sm:text-8xl">
-          The Legends Who
+      <div className="relative z-10 flex flex-1 flex-col justify-center px-6 sm:px-10 lg:px-16">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="font-display text-sm font-bold uppercase tracking-[0.5em] text-[#E8B54D]"
+        >
+          The Greats
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="mt-3 font-display text-6xl font-bold uppercase italic leading-[0.82] tracking-tight sm:text-8xl xl:text-9xl"
+        >
+          Hall of
           <br />
-          Built <span className="text-f1-red">Formula One</span>
-        </h1>
-        <p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-silver sm:text-base">
-          Six drivers. Six eras. One story. Scroll through the careers, the numbers and the moments
-          of the men who defined the fastest sport on earth.
-        </p>
-      </motion.div>
-      <motion.div style={{ opacity: cue }} className="absolute bottom-10 flex flex-col items-center gap-2 text-muted">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.35em]">Scroll to begin the journey</span>
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-          <ChevronDown className="h-5 w-5" />
-        </motion.div>
-      </motion.div>
+          <span className="text-f1-red">Fame</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mt-6 max-w-md font-serif text-base italic leading-relaxed text-silver sm:text-lg"
+        >
+          The drivers who built Formula One — their careers, their numbers, and the moments that made
+          them immortal.
+        </motion.p>
+
+        {/* cover lines */}
+        <div className="mt-10 grid max-w-2xl gap-x-8 gap-y-3 sm:grid-cols-2">
+          {lines.map((l) => (
+            <div key={l.n} className="flex items-baseline gap-3 border-t border-white/10 pt-2">
+              <span className="font-display text-xs font-bold text-f1-red">{l.n}</span>
+              <span>
+                <span className="font-display text-sm font-bold uppercase tracking-wide">{l.t}</span>
+                <span className="block font-serif text-xs italic text-muted">{l.d}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 flex items-center justify-between border-t border-white/15 px-6 py-4 text-[10px] uppercase tracking-[0.25em] text-muted sm:px-10">
+        <span className="font-mono">▐▌│║▌│ █║▌│ 2026</span>
+        <motion.span animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }} className="flex items-center gap-1 text-silver">
+          Turn the page <ChevronDown className="h-3.5 w-3.5" />
+        </motion.span>
+        <span>athex.f1</span>
+      </div>
     </section>
   );
 }
 
 /* ================================================================== */
-/*  Racing-line transition — the line draws, a car follows, era name  */
+/*  Contents                                                          */
 /* ================================================================== */
 
-function RacingLine({ era, title, flip }: { era: string; title: string; flip: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const pathRef = useRef<SVGPathElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-
-  const draw = useTransform(scrollYProgress, [0.12, 0.78], [0, 1]);
-  const carOpacity = useTransform(scrollYProgress, [0.1, 0.18, 0.74, 0.85], [0, 1, 1, 0]);
-  const labelOpacity = useTransform(scrollYProgress, [0.32, 0.46, 0.64, 0.78], [0, 1, 1, 0]);
-  const labelY = useTransform(scrollYProgress, [0.32, 0.5], [18, 0]);
-
-  const carX = useMotionValue(40);
-  const carY = useMotionValue(150);
-  const carR = useMotionValue(0);
-
-  // a winding, circuit-like path
-  const PATH = flip
-    ? "M40,150 C 220,300 340,40 520,150 S 820,60 960,180"
-    : "M40,150 C 220,20 340,300 520,150 S 820,260 960,110";
-
-  useEffect(() => {
-    const unsub = scrollYProgress.on("change", (v) => {
-      const path = pathRef.current;
-      if (!path) return;
-      const t = Math.max(0, Math.min(1, (v - 0.12) / 0.66));
-      const len = path.getTotalLength();
-      const p = path.getPointAtLength(t * len);
-      const p2 = path.getPointAtLength(Math.min(t * len + 1.5, len));
-      carX.set(p.x);
-      carY.set(p.y);
-      carR.set((Math.atan2(p2.y - p.y, p2.x - p.x) * 180) / Math.PI);
-    });
-    return unsub;
-  }, [scrollYProgress, carX, carY, carR]);
-
+function Contents() {
   return (
-    <div ref={ref} className="relative h-[70vh]">
-      <div className="sticky top-14 flex h-[calc(100vh-3.5rem)] items-center justify-center">
-        <svg viewBox="0 0 1000 300" className="w-[92%] max-w-4xl overflow-visible">
-          <defs>
-            <filter id="lineglow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="b" />
-              <feMerge>
-                <feMergeNode in="b" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          {/* ghost track */}
-          <path d={PATH} fill="none" stroke="#1a1a1a" strokeWidth={3} strokeLinecap="round" />
-          {/* glowing racing line drawing in */}
-          <motion.path
-            ref={pathRef}
-            d={PATH}
-            fill="none"
-            stroke="#E10600"
-            strokeWidth={3}
-            strokeLinecap="round"
-            filter="url(#lineglow)"
-            style={{ pathLength: draw }}
-          />
-          {/* the car */}
-          <motion.g style={{ x: carX, y: carY, rotate: carR, opacity: carOpacity }}>
-            <circle r={11} fill="#E10600" opacity={0.35} filter="url(#lineglow)" />
-            <rect x={-9} y={-3} width={18} height={6} rx={3} fill="#f5f5f5" />
-            <rect x={-11} y={-1.5} width={3} height={3} rx={1} fill="#111" />
-            <rect x={8} y={-1.5} width={3} height={3} rx={1} fill="#111" />
-            <rect x={7} y={-2.6} width={4} height={5.2} rx={1} fill="#E10600" />
-          </motion.g>
-        </svg>
-
-        <motion.div
-          style={{ opacity: labelOpacity, y: labelY }}
-          className="pointer-events-none absolute inset-x-0 top-[26%] text-center"
-        >
-          <p className="text-xs font-bold uppercase tracking-[0.5em] text-[#FFD700]">{era}</p>
-          <p className="mt-2 font-display text-2xl font-bold italic tracking-tight text-foreground/90 sm:text-4xl">
-            {title}
+    <section className="mx-auto max-w-6xl px-6 py-24 sm:px-10">
+      <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.4em] text-f1-red">In This Issue</p>
+          <h2 className="mt-3 font-display text-5xl font-bold uppercase italic tracking-tight sm:text-6xl">
+            Contents
+          </h2>
+          <p className="mt-6 font-serif text-base italic leading-relaxed text-silver">
+            An editor's note — Every era of this sport has produced someone who bent it to their will.
+            These are six of them, told in full, and the records they left behind for the rest of us to
+            chase.
           </p>
-        </motion.div>
+          <p className="mt-4 font-serif text-sm leading-relaxed text-muted">
+            — The Editors, F1 Insight
+          </p>
+        </div>
+
+        <ul className="lg:border-l lg:border-white/10 lg:pl-12">
+          {CHAPTERS.map((c, i) => (
+            <li key={c.ref}>
+              <a
+                href={`#feature-${i}`}
+                className="group flex items-center gap-5 border-b border-white/8 py-5 transition-colors hover:bg-white/[0.02]"
+              >
+                <span className="font-display text-3xl font-bold tabular-nums" style={{ color: c.accent }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display text-xl font-bold uppercase tracking-tight">
+                    {c.first} {c.last}
+                  </span>
+                  <span className="block font-serif text-sm italic text-muted">{c.epithet} · {c.era}</span>
+                </span>
+                <span className="font-serif text-sm text-muted">p.{String(START_PAGE + i * 2).padStart(2, "0")}</span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-muted transition group-hover:translate-x-1 group-hover:text-white" />
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="#numbers" className="group flex items-center gap-5 py-5 transition-colors hover:bg-white/[0.02]">
+              <span className="font-display text-3xl font-bold text-[#E8B54D]">—</span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-display text-xl font-bold uppercase tracking-tight">By the Numbers</span>
+                <span className="block font-serif text-sm italic text-muted">Every record that still stands</span>
+              </span>
+              <span className="font-serif text-sm text-muted">p.{String(START_PAGE + CHAPTERS.length * 2).padStart(2, "0")}</span>
+              <ArrowRight className="h-4 w-4 shrink-0 text-muted transition group-hover:translate-x-1 group-hover:text-white" />
+            </a>
+          </li>
+        </ul>
       </div>
-    </div>
+    </section>
   );
 }
 
 /* ================================================================== */
-/*  Driver chapter — one legend owns the screen                       */
+/*  Feature spread                                                    */
 /* ================================================================== */
 
-function ChapterSection({ chapter: c, index }: { chapter: Chapter; index: number }) {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+function Feature({ chapter: c, index, page }: { chapter: Chapter; index: number; page: number }) {
   const reverse = index % 2 === 1;
 
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.08, 0.93, 1], [0, 1, 1, 0]);
-  const portraitY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
-  const portraitScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05]);
-  const nameX = useTransform(scrollYProgress, [0, 0.14], [reverse ? 48 : -48, 0]);
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
-  const quoteOpacity = useTransform(scrollYProgress, [0.68, 0.8], [0, 1]);
-  const quoteY = useTransform(scrollYProgress, [0.68, 0.8], [24, 0]);
-
-  const A_START = 0.26;
-  const A_END = 0.66;
-  const step = (A_END - A_START) / c.achievements.length;
-
-  const Cta = c.eraData ? Link : "a";
-  const ctaProps = c.eraData
-    ? { href: `/drivers/${c.ref}` }
-    : { href: c.wiki, target: "_blank", rel: "noreferrer" };
-
   return (
-    <section ref={ref} className="relative h-[175vh]">
-      <div className="sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
-        {/* faint action-photo backdrop with parallax */}
-        <motion.img
-          src={c.action}
-          alt=""
-          aria-hidden
-          style={{ y: bgY }}
-          className="absolute inset-x-0 -inset-y-[6%] h-[112%] w-full object-cover opacity-[0.14]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070606] via-[#070606]/70 to-[#070606]" />
-        <div
-          className="absolute inset-0"
-          style={{ background: reverse
-            ? "radial-gradient(45% 55% at 80% 50%, rgba(225,6,0,0.10), transparent 70%)"
-            : "radial-gradient(45% 55% at 20% 50%, rgba(225,6,0,0.10), transparent 70%)" }}
-          aria-hidden
-        />
+    <section
+      id={`feature-${index}`}
+      className="relative border-t border-white/10 scroll-mt-16"
+    >
+      {/* per-legend wash */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: `radial-gradient(60% 50% at ${reverse ? "80%" : "20%"} 30%, ${c.accent}10, transparent 70%)` }}
+        aria-hidden
+      />
 
+      <div className="relative mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-20">
+        {/* kicker + headline */}
         <motion.div
-          style={{ opacity: contentOpacity }}
-          className="relative mx-auto flex h-full max-w-7xl flex-col items-center justify-center gap-6 px-6 lg:flex-row lg:gap-14 lg:px-12"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
         >
-          {/* portrait — ~45% */}
-          <motion.div
-            style={{ y: portraitY, scale: portraitScale }}
-            className={cn("relative hidden h-[56vh] w-[40%] shrink-0 lg:block", reverse ? "lg:order-2" : "lg:order-1")}
-          >
-            <img
-              src={c.portrait}
-              alt={`${c.first} ${c.last}`}
-              className="h-full w-full object-cover object-top"
-              style={{
-                maskImage: "radial-gradient(120% 78% at 50% 42%, black 52%, transparent 92%)",
-                WebkitMaskImage: "radial-gradient(120% 78% at 50% 42%, black 52%, transparent 92%)",
-              }}
-            />
-          </motion.div>
-
-          {/* content */}
-          <div className={cn("w-full lg:flex-1", reverse ? "lg:order-1" : "lg:order-2")}>
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.35em] text-[#FFD700]">
-              <span className="h-px w-8 bg-[#FFD700]/60" /> {c.era} · {c.eraTitle}
-            </p>
-            <motion.h2
-              style={{ x: nameX }}
-              className="mt-2 font-display text-4xl font-bold uppercase leading-[0.9] tracking-tight sm:text-6xl"
-            >
-              {c.first} <span className="text-f1-red">{c.last}</span>
-            </motion.h2>
-            <p className="mt-1.5 text-xs uppercase tracking-[0.2em] text-silver">
-              {c.nationality} · {c.years} · <span className="text-[#FFD700]/90">{c.epithet}</span>
-            </p>
-            <p className="mt-3 max-w-lg text-[13px] leading-relaxed text-silver">{c.bio}</p>
-
-            <ul className="mt-4 space-y-1.5">
-              {c.achievements.map((a, i) => (
-                <AchievementRow
-                  key={a.label}
-                  progress={scrollYProgress}
-                  from={A_START + i * step}
-                  to={A_START + i * step + step * 0.85}
-                  achievement={a}
-                />
-              ))}
-            </ul>
-
-            <motion.blockquote
-              style={{ opacity: quoteOpacity, y: quoteY }}
-              className="mt-4 border-l-2 border-f1-red/60 pl-4 font-display text-base font-semibold italic text-foreground/90 sm:text-lg"
-            >
-              “{c.quote}”
-            </motion.blockquote>
-
-            <Cta
-              {...ctaProps}
-              className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:text-f1-red"
-            >
-              {c.eraData ? "Explore the full career" : "Read the story"}
-              <span aria-hidden>→</span>
-            </Cta>
-          </div>
+          <p className="flex items-center gap-3 font-display text-xs font-bold uppercase tracking-[0.35em]" style={{ color: c.accent }}>
+            <span className="h-px w-10" style={{ background: c.accent }} />
+            Legends — No. {String(index + 1).padStart(2, "0")} · {c.era}
+          </p>
+          <h2 className="mt-4 font-display text-6xl font-bold uppercase italic leading-[0.85] tracking-tight sm:text-8xl">
+            {c.first} <span style={{ color: c.accent }}>{c.last}</span>
+          </h2>
         </motion.div>
+
+        {/* spread body */}
+        <div className={cn("mt-10 grid gap-10 lg:grid-cols-12")}>
+          {/* photo */}
+          <motion.figure
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7 }}
+            className={cn("lg:col-span-5", reverse ? "lg:order-2" : "lg:order-1")}
+          >
+            <div className="relative aspect-[4/5] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.portrait} alt={`${c.first} ${c.last}`} className="h-full w-full object-cover object-top" />
+              <div className="absolute inset-0 ring-1 ring-inset ring-white/10" />
+            </div>
+            <figcaption className="mt-3 border-l-2 pl-3 font-serif text-xs italic text-muted" style={{ borderColor: c.accent }}>
+              {c.first} {c.last} — {c.nationality}, {c.years}.
+            </figcaption>
+          </motion.figure>
+
+          {/* text column */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className={cn("lg:col-span-7", reverse ? "lg:order-1" : "lg:order-2")}
+          >
+            <p className="font-serif text-xl font-semibold italic leading-snug text-foreground sm:text-2xl">
+              {c.standfirst}
+            </p>
+
+            <div className="mt-6 gap-x-8 font-serif text-[15px] leading-relaxed text-silver sm:columns-2 [&>p]:mb-4 [&>p:first-of-type]:first-letter:float-left [&>p:first-of-type]:first-letter:mr-2 [&>p:first-of-type]:first-letter:font-display [&>p:first-of-type]:first-letter:text-6xl [&>p:first-of-type]:first-letter:font-bold [&>p:first-of-type]:first-letter:leading-[0.7] [&>p:first-of-type]:first-letter:text-[#E8B54D]">
+              {c.body.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+
+            {/* pull quote */}
+            <blockquote className="my-8 border-y border-white/10 py-6 text-center font-serif text-2xl font-semibold italic leading-snug sm:text-3xl">
+              <span style={{ color: c.accent }}>“</span>
+              {c.quote}
+              <span style={{ color: c.accent }}>”</span>
+            </blockquote>
+
+            {/* fact box */}
+            <div className="rounded-sm border border-white/12 bg-black/30 p-5">
+              <p className="mb-4 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.3em] text-muted">
+                By the Numbers
+                <span className="h-px w-12" style={{ background: c.accent }} />
+              </p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+                {c.stats.map((s) => (
+                  <FactStat key={s.label} stat={s} accent={c.accent} />
+                ))}
+              </div>
+            </div>
+
+            <Link
+              href={c.eraData ? `/drivers/${c.ref}` : c.wiki}
+              {...(c.eraData ? {} : { target: "_blank", rel: "noreferrer" })}
+              className="group mt-6 inline-flex items-center gap-1.5 font-display text-xs font-bold uppercase tracking-widest transition"
+              style={{ color: c.accent }}
+            >
+              {c.eraData ? "Read the full career" : "Continue the story"}
+              <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* folio */}
+        <div className="mt-12 flex items-center justify-between border-t border-white/8 pt-4 text-[10px] uppercase tracking-[0.25em] text-muted">
+          <span>F1 Insight · Hall of Fame</span>
+          <span className="font-display font-bold">— {String(page).padStart(2, "0")} —</span>
+          <span>{c.last}</span>
+        </div>
       </div>
     </section>
   );
 }
 
-function AchievementRow({
-  progress,
-  from,
-  to,
-  achievement: a,
-}: {
-  progress: MotionValue<number>;
-  from: number;
-  to: number;
-  achievement: Achievement;
-}) {
-  const opacity = useTransform(progress, [from, to], [0, 1]);
-  const x = useTransform(progress, [from, to], [-24, 0]);
+function FactStat({ stat: s, accent }: { stat: Stat; accent: string }) {
+  const Icon = STAT_ICONS[s.icon];
   return (
-    <motion.li style={{ opacity, x }} className="flex items-baseline gap-2.5">
-      <Trophy className="h-3 w-3 shrink-0 translate-y-0.5 text-[#FFD700]" />
-      <span>
-        <span className="font-display text-base font-bold">{a.label}</span>
-        {a.sub ? <span className="ml-2 text-[11px] text-muted">{a.sub}</span> : null}
-      </span>
-    </motion.li>
-  );
-}
-
-/* ================================================================== */
-/*  Finish line → Hall of Records                                     */
-/* ================================================================== */
-
-function FinishLine() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const opacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 1]);
-  const scale = useTransform(scrollYProgress, [0.2, 0.6], [0.9, 1]);
-
-  return (
-    <div ref={ref} className="relative flex h-[70vh] items-center justify-center">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-1/2 h-16 -translate-y-1/2 opacity-[0.08]"
-        style={{
-          backgroundImage: "repeating-conic-gradient(#fff 0% 25%, transparent 0% 50%)",
-          backgroundSize: "28px 28px",
-        }}
-        aria-hidden
-      />
-      <motion.div style={{ opacity, scale }} className="relative text-center">
-        <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.5em] text-[#FFD700]">
-          <Flag className="h-4 w-4" /> The Chequered Flag
-        </p>
-        <h2 className="mt-4 font-display text-4xl font-bold uppercase italic tracking-tight sm:text-6xl">
-          Hall of Records
-        </h2>
-        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Every legend leaves a number behind. These are the marks that still stand in the modern era.
-        </p>
-      </motion.div>
+    <div>
+      <Icon className="h-4 w-4" style={{ color: accent }} />
+      <p className="mt-1.5 font-display text-3xl font-bold leading-none tabular-nums">{s.value}</p>
+      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-silver">{s.label}</p>
     </div>
   );
 }
 
 /* ================================================================== */
-/*  Hall of Records — the existing data                               */
+/*  By the numbers (records)                                          */
 /* ================================================================== */
 
-function HallOfRecords({
+function ByTheNumbers({
   data,
   isLoading,
+  page,
 }: {
   data: ReturnType<typeof useHallOfFame>["data"];
   isLoading: boolean;
+  page: number;
 }) {
-  if (isLoading || !data) {
-    return (
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-72" />
-        ))}
-      </div>
-    );
-  }
   return (
-    <div className="space-y-10">
-      <div>
-        <p className="mb-1 text-xs font-bold uppercase tracking-[0.3em] text-[#FFD700]">Drivers</p>
-        <p className="mb-5 text-sm text-muted">Modern-era leaders · {data.seasons_covered}</p>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {data.drivers.map((cat, i) => (
-            <RecordCard key={cat.key} category={cat} kind="drivers" index={i} />
-          ))}
+    <section id="numbers" className="relative border-t border-white/10 scroll-mt-16">
+      <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
+        <div className="mb-12 text-center">
+          <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-[#E8B54D]">
+            The Data Pages
+          </p>
+          <h2 className="mt-3 font-display text-5xl font-bold uppercase italic tracking-tight sm:text-7xl">
+            By the Numbers
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl font-serif text-base italic text-silver">
+            The stories fade; the records remain. These are the marks that still stand across the modern
+            era{data ? ` (${data.seasons_covered})` : ""}.
+          </p>
         </div>
-      </div>
-      <div>
-        <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-[#FFD700]">Constructors</p>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {data.constructors.map((cat, i) => (
-            <RecordCard key={cat.key} category={cat} kind="constructors" index={i} />
-          ))}
+
+        {isLoading || !data ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-72" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-10">
+            <div>
+              <h3 className="mb-4 font-display text-sm font-bold uppercase tracking-[0.25em] text-silver">Drivers</h3>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {data.drivers.map((cat, i) => (
+                  <RecordCard key={cat.key} category={cat} kind="drivers" index={i} />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="mb-4 font-display text-sm font-bold uppercase tracking-[0.25em] text-silver">Constructors</h3>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {data.constructors.map((cat, i) => (
+                  <RecordCard key={cat.key} category={cat} kind="constructors" index={i} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-12 flex items-center justify-between border-t border-white/8 pt-4 text-[10px] uppercase tracking-[0.25em] text-muted">
+          <span>F1 Insight · Hall of Fame</span>
+          <span className="font-display font-bold">— {String(page).padStart(2, "0")} —</span>
+          <span>Fin</span>
         </div>
+
+        <p className="mt-6 text-center font-serif text-xs italic text-muted">
+          Career achievements in the features are all-time records; the data pages are computed from the
+          ingested era{data ? ` (${data.seasons_covered})` : ""}.
+        </p>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -423,11 +380,11 @@ function RecordCard({ category, kind, index }: { category: RecordCategory; kind:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.05, 0.3) }}
-      className="group h-full rounded-card border border-white/8 bg-gradient-to-b from-carbon-800/60 to-carbon-900/80 p-5 transition-colors duration-500 hover:border-[#FFD700]/25"
+      className="group h-full border border-white/10 bg-black/20 p-5 transition-colors duration-500 hover:border-[#E8B54D]/30"
     >
-      <p className="mb-5 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+      <p className="mb-5 flex items-center justify-between font-display text-xs font-semibold uppercase tracking-[0.2em] text-muted">
         {category.title}
-        <span className="h-px w-10 bg-gradient-to-r from-[#FFD700]/60 to-transparent" />
+        <span className="h-px w-10 bg-gradient-to-r from-[#E8B54D]/60 to-transparent" />
       </p>
       <div className="space-y-3">
         {category.entries.map((e, i) => (
@@ -441,19 +398,20 @@ function RecordCard({ category, kind, index }: { category: RecordCategory; kind:
 function RecordRow({ entry, rank, max, kind }: { entry: RecordEntry; rank: number; max: number; kind: "drivers" | "constructors" }) {
   const leader = rank === 1;
   const portrait = kind === "drivers" && entry.ref ? RECORD_PORTRAITS[entry.ref] : undefined;
-  const barColor = leader ? "#FFD700" : entry.color ?? "#6a6a6a";
+  const barColor = leader ? "#E8B54D" : entry.color ?? "#6a6a6a";
 
   const body = (
     <div className="flex items-center gap-3">
       <span className="w-5 text-center">
         {leader ? (
-          <Crown className="mx-auto h-4 w-4 text-[#FFD700]" />
+          <Crown className="mx-auto h-4 w-4 text-[#E8B54D]" />
         ) : (
           <span className="font-display text-sm font-bold tabular-nums text-muted">{rank}</span>
         )}
       </span>
       {portrait ? (
-        <span className={cn("h-9 w-9 shrink-0 overflow-hidden rounded-full", leader ? "ring-2 ring-[#FFD700]/70" : "ring-1 ring-white/15")}>
+        <span className={cn("h-9 w-9 shrink-0 overflow-hidden rounded-full", leader ? "ring-2 ring-[#E8B54D]/70" : "ring-1 ring-white/15")}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={portrait} alt="" loading="lazy" className="h-full w-full object-cover object-top" />
         </span>
       ) : (
@@ -462,7 +420,7 @@ function RecordRow({ entry, rank, max, kind }: { entry: RecordEntry; rank: numbe
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
           <span className={cn("truncate text-sm", leader ? "font-semibold text-foreground" : "text-silver")}>{entry.label}</span>
-          <span className={cn("shrink-0 font-display font-bold tabular-nums", leader ? "text-base text-[#FFD700]" : "text-sm text-silver")}>
+          <span className={cn("shrink-0 font-display font-bold tabular-nums", leader ? "text-base text-[#E8B54D]" : "text-sm text-silver")}>
             {entry.display}
           </span>
         </div>
