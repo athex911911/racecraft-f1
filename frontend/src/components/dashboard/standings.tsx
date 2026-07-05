@@ -170,7 +170,7 @@ function DriverTile({ standing: s }: { standing: DriverStanding }) {
   const color = s.constructor?.color ?? "#3d3d3d";
   return (
     <Link href={`/drivers/${s.driver.driver_ref}`} className="group block">
-      <div className="glass glass-hover relative h-80 overflow-hidden rounded-card sm:h-[22rem]">
+      <div className="glass glass-hover relative h-80 overflow-hidden sm:h-[22rem]">
         {/* the photo IS the tile */}
         {s.driver.headshot_url ? (
           // eslint-disable-next-line @next/next/no-img-element

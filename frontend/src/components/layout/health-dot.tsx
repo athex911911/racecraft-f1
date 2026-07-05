@@ -11,7 +11,7 @@ export function HealthDot({ collapsed }: { collapsed?: boolean }) {
       <span
         className={cn(
           "h-2 w-2 shrink-0 rounded-full",
-          up ? "animate-pulse-glow bg-success" : "bg-danger",
+          up ? "bg-success" : "bg-danger",
         )}
       />
       {!collapsed && (

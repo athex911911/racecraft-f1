@@ -65,7 +65,7 @@ export default function CircuitDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="relative min-h-[300px] overflow-hidden rounded-card border border-white/8 shadow-[0_20px_60px_rgba(0,0,0,0.5)] sm:min-h-[360px]">
+        <div className="relative min-h-[300px] overflow-hidden rounded-card rounded-tr-none border border-white/8 sm:min-h-[360px]">
           {/* full-bleed real photo of the track */}
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element

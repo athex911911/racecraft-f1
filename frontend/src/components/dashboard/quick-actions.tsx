@@ -37,7 +37,7 @@ export function QuickActions() {
                 className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-f1-red to-transparent transition-transform duration-300 group-hover:scale-x-100"
                 aria-hidden
               />
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-f1-red/10 ring-1 ring-f1-red/25 transition group-hover:bg-f1-red/20 group-hover:shadow-[0_0_18px_rgba(225,6,0,0.35)]">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-f1-red/10 ring-1 ring-f1-red/25 transition group-hover:bg-f1-red/20">
                 <Icon className="h-5 w-5 text-f1-red transition-transform duration-300 group-hover:scale-110" />
               </span>
               <p className="mt-3.5 text-sm font-semibold">{label}</p>

@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Titillium_Web } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppShell } from "@/components/layout/app-shell";
 
-const inter = Inter({
-  variable: "--font-inter",
+// Titillium Web is the typeface the official F1 web presence is built on —
+// one family for everything keeps the look grounded rather than "techy".
+const titillium = Titillium_Web({
+  variable: "--font-titillium",
   subsets: ["latin"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
+  weight: ["400", "600", "700", "900"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -28,10 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${titillium.variable} h-full antialiased`}>
       <body className="min-h-full">
         <Providers>
           <AppShell>{children}</AppShell>

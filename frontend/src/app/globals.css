@@ -1,32 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* F1 Insight AI palette */
+  /* F1 Insight AI palette — grounded in the official site's #15151E dark */
   --color-f1-red: #e10600;
   --color-f1-red-bright: #ff2d27;
-  --color-carbon-950: #070707;
-  --color-carbon-900: #0b0b0b;
-  --color-carbon-850: #101010;
-  --color-carbon-800: #161616;
-  --color-carbon-700: #1d1d1d;
-  --color-carbon-600: #222222;
-  --color-carbon-500: #2e2e2e;
-  --color-carbon-400: #3d3d3d;
+  --color-carbon-950: #0e0e14;
+  --color-carbon-900: #15151e;
+  --color-carbon-850: #1a1a23;
+  --color-carbon-800: #1f1f28;
+  --color-carbon-700: #26262f;
+  --color-carbon-600: #2d2d37;
+  --color-carbon-500: #38383f;
+  --color-carbon-400: #4a4a52;
   --color-foreground: #f8f8f8;
-  --color-silver: #bfbfbf;
-  --color-muted: #8a8a8a;
+  --color-silver: #c2c2c7;
+  --color-muted: #8e8e96;
   --color-accent: #00d4ff;
   --color-success: #34c759;
   --color-warning: #ff9500;
   --color-danger: #ff3b30;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
+  --font-sans: var(--font-titillium), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-titillium), ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 1rem;
+  --radius-card: 0.65rem;
 
   --animate-shimmer: shimmer 1.8s linear infinite;
-  --animate-pulse-glow: pulse-glow 2.4s ease-in-out infinite;
   --animate-marquee: marquee 28s linear infinite;
 
   @keyframes shimmer {
@@ -35,15 +34,6 @@
     }
     to {
       background-position: 200% 0;
-    }
-  }
-  @keyframes pulse-glow {
-    0%,
-    100% {
-      opacity: 0.55;
-    }
-    50% {
-      opacity: 1;
     }
   }
   @keyframes marquee {
@@ -64,119 +54,29 @@ html {
   scroll-behavior: smooth;
 }
 
+/* flat, print-like dark — no gradients, no grain, no vignette */
 body {
-  background-color: #060606;
+  background-color: var(--color-carbon-900);
   color: var(--color-foreground);
   font-family: var(--font-sans);
-  /* cinematic layered backdrop: red stage light, cool rim light,
-     fine carbon-fibre weave, deep vertical grade */
-  background-image:
-    radial-gradient(55% 38% at 82% -6%, rgba(225, 6, 0, 0.12), transparent 68%),
-    radial-gradient(45% 30% at 4% -4%, rgba(255, 255, 255, 0.05), transparent 60%),
-    radial-gradient(70% 45% at 50% 108%, rgba(225, 6, 0, 0.05), transparent 70%),
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.013) 0 1.5px, transparent 1.5px 7px),
-    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.009) 0 1.5px, transparent 1.5px 7px),
-    linear-gradient(180deg, #0c0c0c 0%, #070707 45%, #050505 100%);
-  background-attachment: fixed;
 }
 
-/* film grain + cinematic vignette, above content but inert */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  mix-blend-mode: overlay;
-}
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  background: radial-gradient(130% 100% at 50% 12%, transparent 62%, rgba(0, 0, 0, 0.38) 100%);
-}
-
-/* slow drift for hero photography */
-.ken-burns {
-  animation: ken-burns 26s ease-in-out infinite alternate;
-}
-@keyframes ken-burns {
-  from {
-    transform: scale(1.02) translateX(0);
-  }
-  to {
-    transform: scale(1.09) translateX(-1.5%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ken-burns {
-    animation: none;
-  }
-}
-
-/* glassmorphism card surface */
+/* card surface — solid panel with the F1 signature clipped top-right corner */
 .glass {
-  background: linear-gradient(160deg, rgba(34, 34, 34, 0.72), rgba(16, 16, 16, 0.82));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 12px 32px rgba(0, 0, 0, 0.45);
+  background: var(--color-carbon-800);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-card);
+  border-top-right-radius: 0;
 }
 
 .glass-hover {
   transition:
-    transform 200ms ease,
-    border-color 200ms ease,
-    box-shadow 200ms ease;
+    border-color 160ms ease,
+    background-color 160ms ease;
 }
 .glass-hover:hover {
-  transform: translateY(-2px);
-  border-color: rgba(225, 6, 0, 0.35);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 16px 44px rgba(0, 0, 0, 0.55),
-    0 0 24px rgba(225, 6, 0, 0.08);
-}
-
-/* ambient checkered-flag ribbon — decorative backdrop, keep at very low opacity */
-.checker-flag {
-  background-image: repeating-conic-gradient(#ffffff 0% 25%, transparent 0% 50%);
-  background-size: 34px 34px;
-  animation: checker-drift 2.6s linear infinite;
-}
-@keyframes checker-drift {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 34px 34px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .checker-flag {
-    animation: none;
-  }
-}
-
-/* speed-line accent used under headings */
-.speed-line {
-  position: relative;
-}
-.speed-line::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  height: 3px;
-  width: 42px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--color-f1-red), transparent);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--color-carbon-700);
 }
 
 /* skeleton shimmer */
@@ -190,6 +90,15 @@ body::after {
   background-size: 200% 100%;
   animation: var(--animate-shimmer);
   border-radius: 0.5rem;
+}
+
+/* decorative diagonal hatching, as used around the official F1 header */
+.f1-hatch {
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.09) 0 2px,
+    transparent 2px 9px
+  );
 }
 
 /* thin dark scrollbars */

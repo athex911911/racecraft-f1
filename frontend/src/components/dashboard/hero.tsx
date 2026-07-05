@@ -22,7 +22,7 @@ export function Hero() {
 
   if (isLoading) {
     return (
-      <div className="glass rounded-card p-6 sm:p-10">
+      <div className="glass p-6 sm:p-10">
         <Skeleton className="h-14 w-3/4 max-w-xl" />
         <Skeleton className="mt-3 h-14 w-1/2 max-w-md" />
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -50,7 +50,7 @@ export function Hero() {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-card border border-white/8 bg-carbon-950 shadow-[0_30px_80px_rgba(0,0,0,0.55)]"
+      className="relative overflow-hidden rounded-card rounded-tr-none border border-white/8 bg-carbon-950"
     >
       {/* cinematic race photography, fading into the card */}
       <div className="absolute inset-y-0 right-0 w-[74%] sm:w-[60%]" aria-hidden>
@@ -58,7 +58,7 @@ export function Hero() {
         <img
           src={HERO_IMAGE}
           alt=""
-          className="ken-burns h-full w-full object-cover object-[70%_center]"
+          className="h-full w-full object-cover object-[70%_center]"
           style={{
             maskImage: "linear-gradient(270deg, rgba(0,0,0,0.95) 40%, transparent 96%)",
             WebkitMaskImage: "linear-gradient(270deg, rgba(0,0,0,0.95) 40%, transparent 96%)",
@@ -95,7 +95,7 @@ export function Hero() {
           </div>
           <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/10">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-f1-red to-f1-red-bright shadow-[0_0_12px_rgba(225,6,0,0.8)]"
+              className="h-full rounded-full bg-f1-red"
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
@@ -107,20 +107,20 @@ export function Hero() {
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
             href="/compare"
-            className="group inline-flex items-center gap-1.5 rounded-lg bg-f1-red px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white shadow-[0_0_24px_rgba(225,6,0,0.45)] transition hover:bg-f1-red-bright hover:shadow-[0_0_32px_rgba(225,6,0,0.65)]"
+            className="group inline-flex items-center gap-1.5 rounded-lg rounded-tr-none bg-f1-red px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-f1-red-bright"
           >
             Compare Drivers
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
             href="/predictor"
-            className="inline-flex items-center rounded-lg border border-white/20 bg-black/30 px-5 py-2.5 text-sm font-semibold text-silver backdrop-blur transition hover:border-white/40 hover:text-white"
+            className="inline-flex items-center rounded-lg rounded-tr-none border border-white/25 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-silver transition hover:border-white/50 hover:text-white"
           >
             AI Race Predictor
           </Link>
           <Link
             href="/circuits"
-            className="inline-flex items-center rounded-lg border border-white/20 bg-black/30 px-5 py-2.5 text-sm font-semibold text-silver backdrop-blur transition hover:border-white/40 hover:text-white"
+            className="inline-flex items-center rounded-lg rounded-tr-none border border-white/25 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-silver transition hover:border-white/50 hover:text-white"
           >
             Explore Circuits
           </Link>
