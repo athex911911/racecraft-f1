@@ -12,6 +12,7 @@ from app.api.v1.compare import router as compare_router
 from app.api.v1.constructors import router as constructors_router
 from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.drivers import router as drivers_router
+from app.api.v1.predict import router as predict_router
 from app.api.v1.search import router as search_router
 from app.core.config import get_settings
 from app.core.database import engine
@@ -47,6 +48,7 @@ app.include_router(constructors_router)
 app.include_router(circuits_router)
 app.include_router(calendar_router)
 app.include_router(compare_router)
+app.include_router(predict_router)
 app.include_router(search_router)
 
 

@@ -6,6 +6,7 @@ import { apiGet } from "./client";
 import type {
   CalendarRace,
   ChampionshipProgress,
+  ChampionshipSim,
   CircuitDetail,
   CircuitListItem,
   CompareResult,
@@ -18,6 +19,7 @@ import type {
   HealthStatus,
   NextRace,
   RaceDetail,
+  RacePrediction,
   RaceSummary,
   SearchResults,
   SeasonProgress,
@@ -162,6 +164,26 @@ export function useCompareDrivers(a: string | undefined, b: string | undefined) 
     queryKey: ["compare", a, b],
     queryFn: () => apiGet<CompareResult>("/api/v1/compare/drivers", { a, b }),
     enabled: Boolean(a && b),
+  });
+}
+
+export function usePredictRace(raceId?: number) {
+  return useQuery({
+    queryKey: ["predict-race", raceId ?? "next"],
+    queryFn: () =>
+      apiGet<RacePrediction>(
+        raceId != null ? `/api/v1/predict/race/${raceId}` : "/api/v1/predict/race/next",
+      ),
+  });
+}
+
+export function useChampionshipSim() {
+  return useQuery({
+    queryKey: ["predict-championship"],
+    // first call runs the Monte Carlo server-side (a few seconds), then it's memoised
+    queryFn: () => apiGet<ChampionshipSim>("/api/v1/predict/championship"),
+    staleTime: 30 * 60_000,
+    retry: 1,
   });
 }
 

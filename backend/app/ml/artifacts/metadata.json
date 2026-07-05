@@ -1,0 +1,64 @@
+{
+  "algorithm": "Gradient-boosted trees (XGBoost)",
+  "xgboost_version": "3.2.0",
+  "trained_at": "2026-07-05T17:45:50+00:00",
+  "features": [
+    "grid",
+    "quali_pos",
+    "form_finish_5",
+    "form_points_5",
+    "gained_5",
+    "dnf_rate_10",
+    "team_form_points_5",
+    "team_quali_5",
+    "track_avg_finish",
+    "track_starts",
+    "career_starts",
+    "points_share_10"
+  ],
+  "train": {
+    "rows": 5174,
+    "races": 255,
+    "seasons": "2014-2026"
+  },
+  "holdout": {
+    "rows": 655,
+    "races": 32,
+    "seasons": "2025-2026"
+  },
+  "metrics": {
+    "win": {
+      "logloss": 0.0877,
+      "auc": 0.9771,
+      "brier": 0.0274
+    },
+    "podium": {
+      "logloss": 0.1987,
+      "auc": 0.9449,
+      "brier": 0.0602
+    },
+    "top10": {
+      "logloss": 0.5034,
+      "auc": 0.8332,
+      "brier": 0.1652
+    }
+  },
+  "winner_pick_accuracy": {
+    "model": 0.6562,
+    "pole_sitter": 0.6875,
+    "form_favorite": 0.2188
+  },
+  "final_estimators": {
+    "win": 108,
+    "podium": 96,
+    "top10": 69
+  },
+  "top_features_by_gain": [
+    "grid",
+    "quali_pos",
+    "points_share_10",
+    "form_points_5",
+    "form_finish_5",
+    "track_avg_finish"
+  ]
+}

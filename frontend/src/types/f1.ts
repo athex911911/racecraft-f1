@@ -394,6 +394,70 @@ export interface CompareResult {
   head_to_head: HeadToHead;
 }
 
+// --- Race predictor + championship simulation (Phase 3) ---
+
+export interface PredictionFactor {
+  text: string;
+  positive: boolean;
+}
+
+export interface RacePredictionEntry {
+  driver: Driver;
+  constructor: Constructor | null;
+  grid: number | null;
+  win_prob: number;
+  podium_prob: number;
+  top10_prob: number;
+  factors: PredictionFactor[];
+  actual_position: number | null;
+  actual_text: string | null;
+}
+
+export interface PredictModelInfo {
+  algorithm: string;
+  trained_at: string | null;
+  train_seasons: string | null;
+  holdout_seasons: string | null;
+  holdout_races: number | null;
+  auc_win: number | null;
+  auc_podium: number | null;
+  winner_pick_rate: number | null;
+  features: string[];
+}
+
+export interface RacePrediction {
+  race_id: number;
+  season: number;
+  round: number;
+  name: string;
+  date: string;
+  circuit: Circuit;
+  completed: boolean;
+  grid_source: "official" | "qualifying" | "estimated";
+  certainty: number;
+  model: PredictModelInfo;
+  entries: RacePredictionEntry[];
+}
+
+export interface TitleContender {
+  driver: Driver;
+  constructor: Constructor | null;
+  current_points: number;
+  current_position: number | null;
+  title_prob: number;
+  top3_prob: number;
+  expected_points: number;
+}
+
+export interface ChampionshipSim {
+  season: number;
+  completed_rounds: number;
+  total_rounds: number;
+  remaining_sprints: number;
+  iterations: number;
+  contenders: TitleContender[];
+}
+
 // --- Global search (Phase 2) ---
 
 export interface SearchDriver {

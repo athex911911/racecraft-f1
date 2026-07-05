@@ -403,6 +403,71 @@ class CompareOut(BaseModel):
     head_to_head: HeadToHead
 
 
+# --- Race predictor + championship simulation (Phase 3) ---
+
+
+class PredictionFactor(BaseModel):
+    text: str  # human-readable stat behind the prediction
+    positive: bool  # whether it pushes the win probability up or down
+
+
+class RacePredictionEntry(BaseModel):
+    driver: DriverOut
+    constructor: ConstructorOut | None
+    grid: int | None
+    win_prob: float  # normalised share of the field's win probability (sums to 1)
+    podium_prob: float  # raw model probability
+    top10_prob: float
+    factors: list[PredictionFactor]
+    actual_position: int | None  # populated for completed races (backtest view)
+    actual_text: str | None  # "R"/"D"/"W" when the real result was a non-finish
+
+
+class PredictModelInfo(BaseModel):
+    algorithm: str
+    trained_at: str | None
+    train_seasons: str | None
+    holdout_seasons: str | None
+    holdout_races: int | None
+    auc_win: float | None
+    auc_podium: float | None
+    winner_pick_rate: float | None  # holdout share of races where top pick won
+    features: list[str]
+
+
+class RacePredictionOut(BaseModel):
+    race_id: int
+    season: int
+    round: int
+    name: str
+    date: date
+    circuit: CircuitOut
+    completed: bool
+    grid_source: str  # "official" | "qualifying" | "estimated"
+    certainty: float  # 0-1, entropy-based spread of the win probabilities
+    model: PredictModelInfo
+    entries: list[RacePredictionEntry]
+
+
+class TitleContender(BaseModel):
+    driver: DriverOut
+    constructor: ConstructorOut | None
+    current_points: float
+    current_position: int | None
+    title_prob: float
+    top3_prob: float
+    expected_points: float
+
+
+class ChampionshipSimOut(BaseModel):
+    season: int
+    completed_rounds: int
+    total_rounds: int
+    remaining_sprints: int
+    iterations: int
+    contenders: list[TitleContender]
+
+
 # --- Global search (Phase 2) ---
 
 
