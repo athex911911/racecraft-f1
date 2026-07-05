@@ -127,12 +127,12 @@ export function Standings() {
                 {constructors.data?.map((s) => (
                   <tr
                     key={s.constructor.id}
-                    className="border-b border-white/4 transition-colors last:border-0 hover:bg-white/[0.04]"
+                    className="timing-row border-b border-white/4 last:border-0"
                   >
                     <td className="px-4 py-3">
                       <span
                         className={cn(
-                          "font-display text-lg font-bold tabular-nums",
+                          "font-display text-xl font-bold tabular-nums",
                           s.position === 1 ? "text-f1-red" : s.position <= 3 ? "text-foreground" : "text-silver",
                         )}
                       >
@@ -255,17 +255,12 @@ function DriversTable({ standings }: { standings: DriverStanding[] }) {
           {standings.map((s) => (
             <tr
               key={s.driver.id}
-              className="group border-b border-white/4 transition-colors last:border-0 hover:bg-white/[0.04]"
+              className="timing-row group border-b border-white/4 last:border-0"
             >
               <td className="relative px-4 py-3">
                 <span
-                  className="absolute inset-y-1 left-0 w-[3px] rounded-r opacity-0 transition-opacity group-hover:opacity-100"
-                  style={{ background: s.constructor?.color ?? "#3d3d3d" }}
-                  aria-hidden
-                />
-                <span
                   className={cn(
-                    "font-display text-lg font-bold tabular-nums",
+                    "font-display text-xl font-bold tabular-nums",
                     s.position === 1 ? "text-f1-red" : s.position <= 3 ? "text-foreground" : "text-silver",
                   )}
                 >

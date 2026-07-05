@@ -1,29 +1,38 @@
 @import "tailwindcss";
 
 @theme {
-  /* F1 Insight AI palette — grounded in the official site's #15151E dark */
-  --color-f1-red: #e10600;
-  --color-f1-red-bright: #ff2d27;
-  --color-carbon-950: #0e0e14;
-  --color-carbon-900: #15151e;
-  --color-carbon-850: #1a1a23;
-  --color-carbon-800: #1f1f28;
-  --color-carbon-700: #26262f;
-  --color-carbon-600: #2d2d37;
-  --color-carbon-500: #38383f;
-  --color-carbon-400: #4a4a52;
-  --color-foreground: #f8f8f8;
-  --color-silver: #c2c2c7;
-  --color-muted: #8e8e96;
-  --color-accent: #00d4ff;
-  --color-success: #34c759;
-  --color-warning: #ff9500;
+  /* ---- Design tokens (single source of truth) ---------------------------- */
+  /* Racing red */
+  --color-f1-red: #ff1801;
+  --color-f1-red-bright: #ff3b30;
+
+  /* Graphite surface ramp — never pure black */
+  --color-carbon-950: #0d0d0d;
+  --color-carbon-900: #111111; /* app background        */
+  --color-carbon-850: #141414; /* navbar                */
+  --color-carbon-800: #181818; /* section / inputs      */
+  --color-carbon-700: #1a1a1a; /* elevated card         */
+  --color-carbon-600: #212121; /* elevated card, raised */
+  --color-carbon-500: #2b2b2b;
+  --color-carbon-400: #3a3a3a;
+
+  /* Ink */
+  --color-foreground: #f5f5f5;
+  --color-silver: #c8c8c8;
+  --color-muted: #9b9b9b;
+
+  /* Status / accents */
+  --color-accent: #1da1f2; /* broadcast blue */
+  --color-success: #00d084;
+  --color-warning: #ffb800;
   --color-danger: #ff3b30;
 
+  /* Type */
   --font-sans: var(--font-titillium), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-titillium), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow), var(--font-titillium), ui-sans-serif, sans-serif;
+  --font-numeric: var(--font-orbitron), var(--font-barlow), ui-monospace, monospace;
 
-  --radius-card: 0.65rem;
+  --radius-card: 0.875rem;
 
   --animate-shimmer: shimmer 1.8s linear infinite;
   --animate-marquee: marquee 28s linear infinite;
@@ -48,77 +57,166 @@
 
 :root {
   color-scheme: dark;
+  /* cubic-bezier used for every premium transition */
+  --ease-race: cubic-bezier(0.22, 0.7, 0.2, 1);
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* flat, print-like dark — no gradients, no grain, no vignette */
+/* Engineered graphite backdrop: soft depth radials + a barely-there carbon
+   twill. Fixed so it reads as a material the content sits on, not wallpaper. */
 body {
   background-color: var(--color-carbon-900);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  background-image:
+    radial-gradient(125% 80% at 50% -20%, rgba(255, 255, 255, 0.035), transparent 55%),
+    radial-gradient(100% 65% at 50% 120%, rgba(255, 24, 1, 0.035), transparent 72%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.016) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 5px);
+  background-attachment: fixed;
 }
 
-/* card surface — solid panel with the F1 signature clipped top-right corner */
+/* ---- Elevated card surface ---------------------------------------------- */
+/* Solid graphite panel with a top light-catch, hairline border and a soft,
+   wide, dark shadow — depth without heavy drop-shadows. */
 .glass {
-  background: var(--color-carbon-800);
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%),
+    var(--color-carbon-700);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-card);
-  border-top-right-radius: 0;
+  border-top-right-radius: 0; /* the F1 clipped corner */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 30px -14px rgba(0, 0, 0, 0.75);
 }
 
+/* Interactive card: lift, red border, deeper shadow + a faint red halo. */
 .glass-hover {
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
+    transform 0.25s var(--ease-race),
+    border-color 0.25s var(--ease-race),
+    box-shadow 0.25s var(--ease-race);
+  will-change: transform;
 }
 .glass-hover:hover {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: var(--color-carbon-700);
+  transform: translateY(-6px) scale(1.006);
+  border-color: var(--color-f1-red);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 22px 44px -18px rgba(0, 0, 0, 0.85),
+    0 14px 46px -18px rgba(255, 24, 1, 0.22);
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass-hover:hover {
+    transform: none;
+  }
 }
 
-/* skeleton shimmer */
+/* ---- Buttons: race controls --------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 0.5rem;
+  border-top-right-radius: 0;
+  transition:
+    transform 0.25s var(--ease-race),
+    background-color 0.25s var(--ease-race),
+    border-color 0.25s var(--ease-race),
+    box-shadow 0.25s var(--ease-race),
+    color 0.25s var(--ease-race);
+}
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+.btn-primary {
+  background: var(--color-f1-red);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--color-f1-red-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -10px rgba(255, 24, 1, 0.55);
+}
+.btn-secondary {
+  background: var(--color-carbon-700);
+  color: var(--color-silver);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-secondary:hover {
+  background: var(--color-carbon-600);
+  border-color: var(--color-f1-red);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ---- Timing-screen table rows ------------------------------------------- */
+.timing-row {
+  transition:
+    background-color 0.2s var(--ease-race),
+    box-shadow 0.2s var(--ease-race);
+}
+.timing-row:hover {
+  background: rgba(255, 24, 1, 0.06);
+  box-shadow: inset 3px 0 0 var(--color-f1-red);
+}
+
+/* ---- Skeleton ----------------------------------------------------------- */
 .skeleton {
   background: linear-gradient(
     100deg,
-    var(--color-carbon-700) 40%,
+    var(--color-carbon-600) 40%,
     var(--color-carbon-500) 50%,
-    var(--color-carbon-700) 60%
+    var(--color-carbon-600) 60%
   );
   background-size: 200% 100%;
   animation: var(--animate-shimmer);
   border-radius: 0.5rem;
 }
 
-/* decorative diagonal hatching, as used around the official F1 header */
+/* Diagonal racing hatch — used beside the header lockup and as accents. */
 .f1-hatch {
   background-image: repeating-linear-gradient(
     115deg,
-    rgba(255, 255, 255, 0.09) 0 2px,
+    rgba(255, 255, 255, 0.1) 0 2px,
     transparent 2px 9px
   );
 }
 
-/* thin dark scrollbars */
+/* ---- Scrollbar ---------------------------------------------------------- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-carbon-500) transparent;
+  scrollbar-color: rgba(255, 24, 1, 0.6) transparent;
 }
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 *::-webkit-scrollbar-thumb {
-  background: var(--color-carbon-500);
-  border-radius: 4px;
+  background: rgba(255, 24, 1, 0.6);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-f1-red);
+  background-clip: padding-box;
 }
 *::-webkit-scrollbar-track {
   background: transparent;
 }
 
 ::selection {
-  background: rgba(225, 6, 0, 0.55);
+  background: rgba(255, 24, 1, 0.55);
   color: #fff;
 }

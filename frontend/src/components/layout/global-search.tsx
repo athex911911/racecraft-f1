@@ -145,7 +145,6 @@ export function GlobalSearch() {
   return (
     <div ref={boxRef} className="relative w-full max-w-md">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
           ref={inputRef}
           value={raw}
@@ -153,8 +152,9 @@ export function GlobalSearch() {
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder="Search drivers, teams, circuits…"
-          className="w-full rounded-lg border border-white/10 bg-carbon-800/70 py-2 pl-9 pr-14 text-sm text-foreground placeholder:text-muted focus:border-f1-red/50 focus:outline-none focus:ring-1 focus:ring-f1-red/25"
+          className="peer w-full rounded-lg rounded-tr-none border border-white/10 bg-carbon-800/70 py-2.5 pl-9 pr-14 text-sm text-foreground transition-shadow placeholder:text-muted focus:border-f1-red focus:outline-none focus:shadow-[0_0_0_3px_rgba(255,24,1,0.18)]"
         />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted transition-colors peer-focus:text-f1-red" />
         <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-white/10 bg-black/40 px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted sm:block">
           ⌘K
         </kbd>

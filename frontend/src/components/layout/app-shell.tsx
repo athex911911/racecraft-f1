@@ -32,28 +32,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-carbon-900">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-4 sm:px-6">
+      <motion.header
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 0.7, 0.2, 1] }}
+        className="sticky top-0 z-40 border-b border-white/10 bg-carbon-850/85 backdrop-blur-xl"
+      >
+        <div className="mx-auto flex h-[68px] max-w-[1440px] items-center gap-4 px-4 sm:px-6">
           {/* brand */}
           <Link href="/" className="flex shrink-0 items-center gap-3" onClick={() => setMobileOpen(false)}>
-            <span className="flex h-9 w-10 items-center justify-center rounded-md rounded-tr-none bg-f1-red font-display text-sm font-black italic text-white">
+            <span className="flex h-10 w-11 items-center justify-center rounded-md rounded-tr-none bg-f1-red font-display text-lg font-bold italic text-white">
               F1
             </span>
             <span className="hidden min-w-0 sm:block">
-              <span className="block font-display text-sm font-black uppercase italic leading-tight tracking-wide">
+              <span className="block font-display text-lg font-bold uppercase italic leading-none tracking-wide">
                 F1 Insight <span className="text-f1-red">AI</span>
               </span>
-              <span className="block text-[9px] font-semibold uppercase tracking-[0.28em] text-muted">
+              <span className="mt-0.5 block text-[9px] font-semibold uppercase tracking-[0.28em] text-muted">
                 The Paddock, Decoded
               </span>
             </span>
           </Link>
 
           {/* header hatching, as on formula1.com */}
-          <div className="f1-hatch hidden h-16 w-10 shrink-0 xl:block" aria-hidden />
+          <div className="f1-hatch hidden h-[68px] w-10 shrink-0 xl:block" aria-hidden />
 
           {/* primary nav */}
-          <nav className="hidden h-16 items-stretch lg:flex">
+          <nav className="hidden h-[68px] items-stretch lg:flex">
             {NAV_ITEMS.map(({ href, label }) => {
               const active = isActive(href);
               return (
@@ -61,15 +66,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   key={href}
                   href={href}
                   className={cn(
-                    "relative flex items-center px-2.5 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-3.5",
+                    "group relative flex items-center px-2.5 text-[15px] font-bold uppercase tracking-[0.06em] transition-colors xl:px-3.5",
                     active ? "text-white" : "text-silver hover:text-white",
                   )}
                 >
                   {label}
+                  {/* center-grow underline on hover */}
+                  {!active && (
+                    <span className="pointer-events-none absolute inset-x-2.5 bottom-0 h-[3px] origin-center scale-x-0 bg-f1-red transition-transform duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] group-hover:scale-x-100 xl:inset-x-3.5" />
+                  )}
                   {active && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute inset-x-1 bottom-0 h-[3px] bg-f1-red"
+                      className="absolute inset-x-2.5 bottom-0 h-[3px] bg-f1-red xl:inset-x-3.5"
                       transition={{ type: "spring", stiffness: 500, damping: 40 }}
                     />
                   )}
@@ -85,7 +94,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               2026 Season
             </span>
             <button
-              className="rounded-md p-2 text-silver hover:bg-white/5 lg:hidden"
+              className="rounded-md p-2 text-silver transition-colors hover:bg-white/5 hover:text-white lg:hidden"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
             >
@@ -96,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* mobile nav panel */}
         {mobileOpen && (
-          <nav className="border-t border-white/10 bg-carbon-900 lg:hidden">
+          <nav className="border-t border-white/10 bg-carbon-850 lg:hidden">
             <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-1 px-4 py-3 sm:px-6">
               {NAV_ITEMS.map(({ href, label }) => {
                 const active = isActive(href);
@@ -119,7 +128,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </nav>
         )}
-      </header>
+      </motion.header>
 
       <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
         <motion.div

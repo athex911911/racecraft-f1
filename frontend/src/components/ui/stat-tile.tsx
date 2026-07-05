@@ -9,20 +9,20 @@ interface StatTileProps {
   className?: string;
 }
 
-/** Compact KPI tile — big number, quiet label. Reused across analytics pages. */
+/** Compact KPI tile — big broadcast number, quiet label. Reused across pages. */
 export function StatTile({ label, value, sub, accent = false, className }: StatTileProps) {
   return (
     <GlassCard className={cn("px-4 py-3.5", className)}>
-      <p className="text-[10px] uppercase tracking-widest text-muted">{label}</p>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted">{label}</p>
       <p
         className={cn(
-          "mt-1 font-display text-2xl font-bold tabular-nums leading-none",
+          "mt-1.5 font-numeric text-[26px] font-bold tabular-nums leading-none",
           accent ? "text-f1-red" : "text-foreground",
         )}
       >
         {value}
       </p>
-      {sub ? <p className="mt-1 text-[11px] text-silver">{sub}</p> : null}
+      {sub ? <p className="mt-1.5 text-[11px] text-silver">{sub}</p> : null}
     </GlassCard>
   );
 }

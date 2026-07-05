@@ -11,7 +11,7 @@ export function CircuitCard({ item }: { item: CircuitListItem }) {
 
   return (
     <Link href={`/circuits/${c.circuit_ref}`} className="group block">
-      <div className="relative h-64 overflow-hidden rounded-card rounded-tr-none border border-white/8 bg-carbon-850 transition-colors duration-300 hover:border-white/25">
+      <div className="relative h-64 overflow-hidden rounded-card rounded-tr-none border border-white/8 bg-carbon-850 transition-[transform,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] will-change-transform group-hover:-translate-y-1.5 group-hover:border-f1-red group-hover:shadow-[0_22px_44px_-18px_rgba(0,0,0,0.85),0_14px_46px_-18px_rgba(255,24,1,0.22)]">
         {/* the track, for real */}
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element

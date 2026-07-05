@@ -46,12 +46,12 @@ export function Countdown({ date, time, className }: CountdownProps) {
       {cells.map(([value, unit]) => (
         <div
           key={unit}
-          className="flex min-w-14 flex-col items-center rounded-lg border border-white/10 bg-black/40 px-2 py-1.5"
+          className="flex min-w-14 flex-col items-center rounded-lg rounded-tr-none border border-white/10 bg-black/40 px-2 py-1.5"
         >
-          <span className="font-display text-xl font-bold tabular-nums sm:text-2xl">
+          <span className="font-numeric text-xl font-bold tabular-nums sm:text-2xl">
             {String(value).padStart(2, "0")}
           </span>
-          <span className="text-[9px] uppercase tracking-widest text-muted">{unit}</span>
+          <span className="mt-1 text-[9px] uppercase tracking-widest text-muted">{unit}</span>
         </div>
       ))}
     </div>

@@ -50,22 +50,26 @@ export function Hero() {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-card rounded-tr-none border border-white/8 bg-carbon-950"
+      className="relative overflow-hidden rounded-card rounded-tr-none border border-white/8 bg-carbon-800"
     >
       {/* cinematic race photography, fading into the card */}
-      <div className="absolute inset-y-0 right-0 w-[74%] sm:w-[60%]" aria-hidden>
+      <div className="absolute inset-y-0 right-0 w-[78%] sm:w-[62%]" aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={HERO_IMAGE}
           alt=""
           className="h-full w-full object-cover object-[70%_center]"
           style={{
-            maskImage: "linear-gradient(270deg, rgba(0,0,0,0.95) 40%, transparent 96%)",
-            WebkitMaskImage: "linear-gradient(270deg, rgba(0,0,0,0.95) 40%, transparent 96%)",
+            maskImage: "linear-gradient(270deg, rgba(0,0,0,0.95) 38%, transparent 94%)",
+            WebkitMaskImage: "linear-gradient(270deg, rgba(0,0,0,0.95) 38%, transparent 94%)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/40" />
+        {/* deep cinematic grade so the headline always reads */}
+        <div className="absolute inset-0 bg-gradient-to-r from-carbon-800 via-carbon-800/35 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/35" />
       </div>
+      {/* subtle diagonal racing-stripe overlay */}
+      <div className="f1-hatch pointer-events-none absolute inset-0 opacity-[0.35]" aria-hidden />
       {/* red racing line */}
       <div
         className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-f1-red via-f1-red/40 to-transparent"
@@ -76,22 +80,22 @@ export function Hero() {
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-f1-red">
           {data.season} Formula 1 Season
         </p>
-        <h1 className="mt-3 max-w-xl font-display text-4xl font-bold uppercase italic leading-[0.95] tracking-tight sm:text-6xl">
+        <h1 className="mt-3 max-w-2xl font-display text-5xl font-bold uppercase italic leading-[0.9] tracking-tight sm:text-7xl lg:text-[72px]">
           The Pinnacle
           <br />
           of Motorsport
         </h1>
-        <p className="mt-4 text-sm font-medium tracking-wide text-silver">
+        <p className="mt-4 text-sm font-semibold uppercase tracking-[0.15em] text-silver">
           {gridFacts.join("  ·  ")}
         </p>
 
         {/* season progress */}
         <div className="mt-6 max-w-md">
-          <div className="flex items-center justify-between text-xs text-muted">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wider text-muted">
             <span>
               Round {data.completed_rounds} of {data.total_rounds}
             </span>
-            <span className="tabular-nums">{pct}% complete</span>
+            <span className="font-numeric text-sm text-silver">{pct}%</span>
           </div>
           <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/10">
             <motion.div
@@ -105,23 +109,14 @@ export function Hero() {
 
         {/* CTAs — same destinations as before */}
         <div className="mt-7 flex flex-wrap gap-3">
-          <Link
-            href="/compare"
-            className="group inline-flex items-center gap-1.5 rounded-lg rounded-tr-none bg-f1-red px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-f1-red-bright"
-          >
+          <Link href="/compare" className="btn btn-primary group text-sm">
             Compare Drivers
-            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
-          <Link
-            href="/predictor"
-            className="inline-flex items-center rounded-lg rounded-tr-none border border-white/25 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-silver transition hover:border-white/50 hover:text-white"
-          >
+          <Link href="/predictor" className="btn btn-secondary text-sm">
             AI Race Predictor
           </Link>
-          <Link
-            href="/circuits"
-            className="inline-flex items-center rounded-lg rounded-tr-none border border-white/25 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-silver transition hover:border-white/50 hover:text-white"
-          >
+          <Link href="/circuits" className="btn btn-secondary text-sm">
             Explore Circuits
           </Link>
         </div>

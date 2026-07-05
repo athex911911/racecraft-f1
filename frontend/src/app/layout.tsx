@@ -1,16 +1,31 @@
 import type { Metadata } from "next";
-import { Titillium_Web } from "next/font/google";
+import { Barlow_Condensed, Orbitron, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppShell } from "@/components/layout/app-shell";
 
-// Titillium Web is the typeface the official F1 web presence is built on —
-// one family for everything keeps the look grounded rather than "techy".
+// Broadcast typography, three roles:
+//  · Titillium Web — the official F1 web typeface: nav, body, labels.
+//  · Barlow Condensed — aggressive condensed display: hero + section titles.
+//  · Orbitron — reserved for showcase timing numbers only.
 const titillium = Titillium_Web({
   variable: "--font-titillium",
   subsets: ["latin"],
   weight: ["400", "600", "700", "900"],
   style: ["normal", "italic"],
+});
+
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +42,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${titillium.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${titillium.variable} ${barlow.variable} ${orbitron.variable} h-full antialiased`}
+    >
       <body className="min-h-full">
         <Providers>
           <AppShell>{children}</AppShell>
