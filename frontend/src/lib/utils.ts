@@ -114,6 +114,18 @@ export function formatPoints(points: number): string {
   return Number.isInteger(points) ? String(points) : points.toFixed(1);
 }
 
+/**
+ * Resolve a Wikimedia thumbnail URL to its original (max-resolution) file.
+ * Thumbnails look like `.../commons/thumb/a/ab/File.jpg/500px-File.jpg`; the
+ * original is `.../commons/a/ab/File.jpg`. Requesting a fixed larger width can
+ * 400 when the source is smaller, so we just take the original — always the best
+ * available for that driver. Non-thumbnail URLs are returned untouched.
+ */
+export function hiResPhoto(url: string): string {
+  if (!url.includes("/thumb/")) return url;
+  return url.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
+}
+
 export function ordinal(n: number): string {
   const s = ["th", "st", "nd", "rd"];
   const v = n % 100;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn, hiResPhoto } from "@/lib/utils";
 import type { Driver } from "@/types/f1";
 
 interface DriverPhotoTileProps {
@@ -22,7 +22,8 @@ interface DriverPhotoTileProps {
 export function DriverPhotoTile({ driver, teamColor, className, children }: DriverPhotoTileProps) {
   const color = teamColor ?? "#3d3d3d";
   const [photoFailed, setPhotoFailed] = useState(false);
-  const showPhoto = Boolean(driver.headshot_url) && !photoFailed;
+  const src = driver.headshot_url ? hiResPhoto(driver.headshot_url) : null;
+  const showPhoto = Boolean(src) && !photoFailed;
 
   const initials =
     driver.code ??
@@ -40,13 +41,25 @@ export function DriverPhotoTile({ driver, teamColor, className, children }: Driv
     >
       <div className="tile-inner">
         {showPhoto ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={driver.headshot_url as string}
-            alt={driver.full_name}
-            onError={() => setPhotoFailed(true)}
-            className="absolute inset-0 h-full w-full object-cover object-top"
-          />
+          <>
+            {/* blurred fill so the portrait is never cropped, yet no dead bars */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src as string}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+            />
+            <div className="absolute inset-0 bg-black/25" aria-hidden />
+            {/* the full, uncropped portrait — always in frame */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src as string}
+              alt={driver.full_name}
+              onError={() => setPhotoFailed(true)}
+              className="absolute inset-0 h-full w-full object-contain object-bottom"
+            />
+          </>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-carbon-700">
             <span className="font-display text-7xl font-bold italic text-white/20">{initials}</span>
