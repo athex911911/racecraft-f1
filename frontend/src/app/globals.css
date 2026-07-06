@@ -184,6 +184,26 @@ body {
   border-radius: 0.5rem;
 }
 
+/* Living portrait tile: a slow cinematic pan/zoom so a still headshot reads as
+   motion when no real clip exists (Compare page). Foreground + purposeful, so
+   it's exempt from the "no ambient loops" rule — but still reduced-motion safe. */
+.motion-pan {
+  animation: motion-pan 18s ease-in-out infinite alternate;
+}
+@keyframes motion-pan {
+  from {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.14) translate3d(-2%, -2.5%, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-pan {
+    animation: none;
+  }
+}
+
 /* Diagonal racing hatch — used beside the header lockup and as accents. */
 .f1-hatch {
   background-image: repeating-linear-gradient(

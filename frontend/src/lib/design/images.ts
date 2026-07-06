@@ -80,3 +80,17 @@ export const CIRCUIT_PHOTOS: Record<string, string> = {
   losail: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/WTCC_2016%2C_Qatar.jpg/1280px-WTCC_2016%2C_Qatar.jpg",
 };
 
+/**
+ * Short, muted, hotlinked video clips keyed by Ergast/Jolpica driver_ref, used
+ * as living portrait tiles (e.g. the Compare page). Free per-driver footage
+ * barely exists — Wikimedia Commons only has a handful of clips — so this map
+ * is intentionally sparse. Any driver_ref NOT present here falls back to a
+ * cinematic still (their headshot with a slow pan). To add a driver, drop in a
+ * direct .webm/.mp4 URL; the DriverVideoTile handles the rest automatically.
+ */
+export const DRIVER_VIDEOS: Record<string, string> = {
+  // Max Verstappen — Red Bull Fan Zone, Melbourne 2024 (Wikimedia Commons, CC).
+  max_verstappen:
+    "https://upload.wikimedia.org/wikipedia/commons/4/47/Max_Verstappen_at_the_Red_Bull_Fan_Zone_%E2%80%93_Crown_Riverwalk%2C_Melbourne_%28028A7670%29.webm",
+};
+

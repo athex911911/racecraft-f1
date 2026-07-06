@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "recharts";
 
-import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { DriverVideoTile } from "@/components/f1/driver-video-tile";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -146,26 +146,32 @@ function DriverPicker({
 
 function DriverBanner({ detail, color }: { detail: DriverDetail; color: string }) {
   return (
-    <GlassCard className="relative overflow-hidden p-5">
-      <span className="absolute inset-x-0 top-0 h-1" style={{ background: color }} aria-hidden />
-      <div
-        className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-20 blur-3xl"
-        style={{ background: color }}
-        aria-hidden
-      />
-      <div className="relative flex items-center gap-4">
-        <DriverAvatar driver={detail.driver} teamColor={color} size="lg" />
-        <div className="min-w-0">
-          <p className="truncate font-display text-lg font-bold">
-            {nationalityFlag(detail.driver.nationality)} {detail.driver.full_name}
-          </p>
-          <p className="truncate text-sm text-silver">{detail.current_constructor?.name ?? "—"}</p>
-          <p className="mt-1 text-xs text-muted">
-            {detail.career.races} races · {detail.career.wins} wins · {detail.career.titles} titles
-          </p>
-        </div>
+    <DriverVideoTile driver={detail.driver} teamColor={color} className="h-72 sm:h-80">
+      <p className="truncate font-display text-2xl font-bold uppercase italic leading-none">
+        {nationalityFlag(detail.driver.nationality)} {detail.driver.full_name}
+      </p>
+      <p className="mt-1.5 truncate text-sm text-silver">
+        <span
+          className="mr-1.5 inline-block h-2.5 w-2.5 rounded-sm align-middle"
+          style={{ background: color }}
+        />
+        {detail.current_constructor?.name ?? "—"}
+      </p>
+      <div className="mt-3 flex gap-5 border-t border-white/15 pt-2.5">
+        <TileStat label="Races" value={detail.career.races} />
+        <TileStat label="Wins" value={detail.career.wins} />
+        <TileStat label="Titles" value={detail.career.titles} />
       </div>
-    </GlassCard>
+    </DriverVideoTile>
+  );
+}
+
+function TileStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <p className="font-display text-xl font-bold tabular-nums leading-none">{value}</p>
+      <p className="mt-1 text-[9px] uppercase tracking-widest text-muted">{label}</p>
+    </div>
   );
 }
 
