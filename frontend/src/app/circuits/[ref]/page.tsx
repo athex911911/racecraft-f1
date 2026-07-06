@@ -2,13 +2,19 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, CalendarDays, ChevronDown, Timer } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import { CircuitHologram } from "@/components/circuits/circuit-hologram";
 import { DriverAvatar } from "@/components/f1/driver-avatar";
 import { GlassCard } from "@/components/ui/glass-card";
+
+// Leaflet needs the browser — load the satellite map client-side only.
+const CircuitMap = dynamic(
+  () => import("@/components/circuits/circuit-map").then((m) => m.CircuitMap),
+  { ssr: false, loading: () => <Skeleton className="h-[460px] w-full sm:h-[580px]" /> },
+);
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatTile } from "@/components/ui/stat-tile";
@@ -164,13 +170,13 @@ export default function CircuitDetailPage() {
         </div>
       </Reveal>
 
-      {/* holographic racing lines */}
+      {/* racing lines on the real satellite view */}
       <Reveal>
         <SectionHeading
           title="Racing Lines"
-          subtitle="Holographic top-down — fastest, optimal and slowest lines through the lap"
+          subtitle="Real aerial view — fastest, optimal and slowest lines through the lap"
         />
-        <CircuitHologram circuitRef={c.circuit_ref} corners={c.corners} />
+        <CircuitMap circuitRef={c.circuit_ref} lat={c.lat} lng={c.lng} />
       </Reveal>
 
       {/* most successful here */}
