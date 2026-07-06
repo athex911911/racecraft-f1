@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "recharts";
 
-import { DriverVideoTile } from "@/components/f1/driver-video-tile";
+import { DriverPhotoTile } from "@/components/f1/driver-photo-tile";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -146,7 +146,7 @@ function DriverPicker({
 
 function DriverBanner({ detail, color }: { detail: DriverDetail; color: string }) {
   return (
-    <DriverVideoTile driver={detail.driver} teamColor={color} className="h-72 sm:h-80">
+    <DriverPhotoTile driver={detail.driver} teamColor={color} className="h-[420px] sm:h-[480px]">
       <p className="truncate font-display text-2xl font-bold uppercase italic leading-none">
         {nationalityFlag(detail.driver.nationality)} {detail.driver.full_name}
       </p>
@@ -162,7 +162,7 @@ function DriverBanner({ detail, color }: { detail: DriverDetail; color: string }
         <TileStat label="Wins" value={detail.career.wins} />
         <TileStat label="Titles" value={detail.career.titles} />
       </div>
-    </DriverVideoTile>
+    </DriverPhotoTile>
   );
 }
 

@@ -184,22 +184,47 @@ body {
   border-radius: 0.5rem;
 }
 
-/* Living portrait tile: a slow cinematic pan/zoom so a still headshot reads as
-   motion when no real clip exists (Compare page). Foreground + purposeful, so
-   it's exempt from the "no ambient loops" rule — but still reduced-motion safe. */
-.motion-pan {
-  animation: motion-pan 18s ease-in-out infinite alternate;
+/* Animated-boundary tile: a still photo framed by a light beam that sweeps the
+   border continuously (Compare page). The motion lives on the edge, not the
+   photo. `--tile-accent` tints the beam to the driver's team colour. */
+.tile-frame {
+  position: relative;
+  padding: 3px; /* the animated border thickness */
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1); /* resting hairline border */
 }
-@keyframes motion-pan {
-  from {
-    transform: scale(1.06) translate3d(0, 0, 0);
-  }
+.tile-frame::before {
+  content: "";
+  position: absolute;
+  inset: -60%; /* overhang so the beam covers corners as it rotates */
+  z-index: 0;
+  /* a comet-like light streak: fades in, peaks white-hot, fades out */
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 28deg,
+    color-mix(in srgb, var(--tile-accent, #ff1801) 55%, transparent) 46deg,
+    var(--tile-accent, #ff1801) 64deg,
+    #ffffff 74deg,
+    var(--tile-accent, #ff1801) 84deg,
+    transparent 104deg 360deg
+  );
+  animation: tile-beam 4.5s linear infinite;
+}
+.tile-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  background: var(--color-carbon-850);
+}
+@keyframes tile-beam {
   to {
-    transform: scale(1.14) translate3d(-2%, -2.5%, 0);
+    transform: rotate(360deg);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .motion-pan {
+  .tile-frame::before {
     animation: none;
   }
 }
