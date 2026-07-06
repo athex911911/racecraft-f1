@@ -189,7 +189,7 @@ body {
    photo. `--tile-accent` tints the beam to the driver's team colour. */
 .tile-frame {
   position: relative;
-  padding: 5px; /* the animated border thickness */
+  padding: 2px; /* the animated border thickness */
   overflow: hidden;
   background: rgba(255, 255, 255, 0.1); /* resting hairline border */
 }

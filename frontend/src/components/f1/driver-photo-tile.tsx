@@ -41,25 +41,14 @@ export function DriverPhotoTile({ driver, teamColor, className, children }: Driv
     >
       <div className="tile-inner">
         {showPhoto ? (
-          <>
-            {/* blurred fill so the portrait is never cropped, yet no dead bars */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={src as string}
-              alt=""
-              aria-hidden
-              className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
-            />
-            <div className="absolute inset-0 bg-black/25" aria-hidden />
-            {/* the full, uncropped portrait — always in frame */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={src as string}
-              alt={driver.full_name}
-              onError={() => setPhotoFailed(true)}
-              className="absolute inset-0 h-full w-full object-contain object-bottom"
-            />
-          </>
+          // fills the whole tile (no bars); anchored to the top so the head stays in view
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src as string}
+            alt={driver.full_name}
+            onError={() => setPhotoFailed(true)}
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-carbon-700">
             <span className="font-display text-7xl font-bold italic text-white/20">{initials}</span>
