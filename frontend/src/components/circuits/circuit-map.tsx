@@ -72,7 +72,13 @@ function MapReady({ track }: { track?: LL[] }) {
     // the section animates in (whileInView), so settle the size before fitting
     const t = setTimeout(() => {
       map.invalidateSize();
-      if (track) map.fitBounds(L.latLngBounds(track), { padding: [24, 24] });
+      if (!track) return;
+      const bounds = L.latLngBounds(track);
+      map.fitBounds(bounds, { padding: [24, 24] });
+      // lock the view to the circuit: no zooming out past the framed track,
+      // no panning away from it
+      map.setMinZoom(map.getZoom());
+      map.setMaxBounds(bounds.pad(0.35));
     }, 80);
     return () => clearTimeout(t);
   }, [map, track]);
@@ -134,11 +140,14 @@ export function CircuitMap({
     <div className="relative overflow-hidden rounded-card rounded-tr-none border border-white/8">
       <div className="h-[460px] w-full sm:h-[580px]">
         <MapContainer
+          className="circuit-sat"
           center={center}
           zoom={15}
           minZoom={12}
           maxZoom={18}
-          scrollWheelZoom
+          scrollWheelZoom={false}
+          doubleClickZoom={false}
+          maxBoundsViscosity={1}
           style={{ height: "100%", width: "100%", background: "#0d0d0d" }}
         >
           <TileLayer
