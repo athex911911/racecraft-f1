@@ -1,10 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Maximize2, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { GlassCard } from "@/components/ui/glass-card";
 import { CIRCUIT_TRACKS } from "@/lib/design/circuit-tracks";
 import { cn } from "@/lib/utils";
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
+const clampPan = (p: { x: number; y: number }, z: number) => {
+  const lim = (z - 1) * 260;
+  return { x: clamp(p.x, -lim, lim), y: clamp(p.y, -lim, lim) };
+};
 
 /**
  * Holographic top-down circuit with three racing lines.
@@ -119,6 +128,48 @@ export function CircuitHologram({
   corners?: number | null;
 }) {
   const [sel, setSel] = useState<LineKey>("optimal");
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ x: number; y: number } | null>(null);
+
+  const zoomBy = (d: number) =>
+    setZoom((z) => {
+      const nz = clamp(Number((z + d).toFixed(2)), MIN_ZOOM, MAX_ZOOM);
+      setPan((p) => clampPan(p, nz));
+      return nz;
+    });
+  const reset = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  // wheel-to-zoom (non-passive so it doesn't scroll the page)
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      zoomBy(e.deltaY < 0 ? 0.3 : -0.3);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+    setDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    setPan(clampPan({ x: e.clientX - dragRef.current.x, y: e.clientY - dragRef.current.y }, zoom));
+  };
+  const onPointerUp = () => {
+    dragRef.current = null;
+    setDragging(false);
+  };
 
   const { tarmac, lines, start, real } = useMemo(() => {
     const real = CIRCUIT_TRACKS[circuitRef] as Pt[] | undefined;
@@ -134,7 +185,23 @@ export function CircuitHologram({
   return (
     <GlassCard className="overflow-hidden">
       <div className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
-        <div className="relative mx-auto aspect-square w-full max-w-[440px]">
+        <div
+          ref={viewportRef}
+          className="relative mx-auto aspect-square w-full max-w-[600px] touch-none select-none overflow-hidden rounded-lg"
+          style={{ cursor: zoom > 1 ? (dragging ? "grabbing" : "grab") : "default" }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerLeave={onPointerUp}
+        >
+          <div
+            className="h-full w-full"
+            style={{
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              transformOrigin: "center",
+              transition: dragging ? "none" : "transform 0.15s ease-out",
+            }}
+          >
           <svg viewBox={`0 0 ${VB} ${VB}`} className="h-full w-full">
             <defs>
               <radialGradient id="holo-bg" cx="50%" cy="42%" r="65%">
@@ -198,6 +265,28 @@ export function CircuitHologram({
               <animateMotion dur="6s" repeatCount="indefinite" path={lines[sel]} rotate="auto" />
             </circle>
           </svg>
+          </div>
+
+          {/* zoom controls — stop pointerdown so it doesn't start a viewport drag */}
+          <div
+            className="absolute bottom-2.5 right-2.5 z-10 flex flex-col gap-1.5"
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <ZoomButton label="Zoom in" onClick={() => zoomBy(0.5)} disabled={zoom >= MAX_ZOOM}>
+              <ZoomIn className="h-4 w-4" />
+            </ZoomButton>
+            <ZoomButton label="Zoom out" onClick={() => zoomBy(-0.5)} disabled={zoom <= MIN_ZOOM}>
+              <ZoomOut className="h-4 w-4" />
+            </ZoomButton>
+            <ZoomButton label="Reset view" onClick={reset} disabled={zoom === 1 && pan.x === 0 && pan.y === 0}>
+              <Maximize2 className="h-3.5 w-3.5" />
+            </ZoomButton>
+          </div>
+          {zoom > 1 ? (
+            <span className="pointer-events-none absolute left-2.5 top-2.5 z-10 rounded bg-black/50 px-1.5 py-0.5 font-numeric text-[10px] text-silver backdrop-blur">
+              {zoom.toFixed(1)}×
+            </span>
+          ) : null}
         </div>
 
         <div className="flex shrink-0 flex-col gap-2 sm:w-52">
@@ -234,10 +323,35 @@ export function CircuitHologram({
           })}
           <p className="mt-1 text-[10px] leading-relaxed text-muted">
             {real ? "Real circuit geometry" : "Approximate layout"} · racing lines modelled from
-            corner geometry, not lap telemetry.
+            corner geometry, not lap telemetry. Scroll or drag to zoom &amp; pan.
           </p>
         </div>
       </div>
     </GlassCard>
+  );
+}
+
+function ZoomButton({
+  label,
+  onClick,
+  disabled,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      className="flex h-8 w-8 items-center justify-center rounded-lg rounded-tr-none border border-white/10 bg-black/50 text-silver backdrop-blur transition hover:border-f1-red/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+    >
+      {children}
+    </button>
   );
 }
