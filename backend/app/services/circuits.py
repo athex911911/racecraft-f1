@@ -150,7 +150,7 @@ def circuit_detail(db: Session, circuit_ref: str) -> CircuitDetailOut | None:
             color = w.constructor.color if w.constructor else None
             entry = counts.get(label)
             counts[label] = TopEntry(label=label, color=color, value=(entry.value + 1) if entry else 1)
-        return sorted(counts.values(), key=lambda e: e.value, reverse=True)[:5]
+        return sorted(counts.values(), key=lambda e: e.value, reverse=True)[:10]
 
     return CircuitDetailOut(
         circuit=CircuitOut.model_validate(circuit),

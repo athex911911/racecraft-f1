@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, CalendarDays, Timer } from "lucide-react";
+import { ArrowLeft, CalendarDays, ChevronDown, Timer } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
+import { CircuitHologram } from "@/components/circuits/circuit-hologram";
 import { DriverAvatar } from "@/components/f1/driver-avatar";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -162,6 +164,15 @@ export default function CircuitDetailPage() {
         </div>
       </Reveal>
 
+      {/* holographic racing lines */}
+      <Reveal>
+        <SectionHeading
+          title="Racing Lines"
+          subtitle="Holographic top-down — fastest, optimal and slowest lines through the lap"
+        />
+        <CircuitHologram circuitRef={c.circuit_ref} corners={c.corners} />
+      </Reveal>
+
       {/* most successful here */}
       {data.races_held > 0 ? (
         <Reveal>
@@ -190,35 +201,53 @@ export default function CircuitDetailPage() {
   );
 }
 
-/** Horizontal win-count bars; team colour marks identity, label + value always visible. */
+/** Horizontal win-count bars; team colour marks identity, label + value always visible.
+ *  Shows the top 3 by default with a "show more" toggle for the rest. */
 function TopList({ title, entries }: { title: string; entries: TopEntry[] }) {
+  const [expanded, setExpanded] = useState(false);
   const max = Math.max(...entries.map((e) => e.value), 1);
+  const visible = expanded ? entries : entries.slice(0, 3);
+  const hidden = entries.length - 3;
+
   return (
     <GlassCard className="p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted">{title}</p>
       {entries.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted">No races here yet.</p>
       ) : (
-        <div className="space-y-3">
-          {entries.map((e) => (
-            <div key={e.label} className="flex items-center gap-3">
-              <span className="w-36 truncate text-sm text-silver">{e.label}</span>
-              <div className="h-4 flex-1 overflow-hidden rounded bg-white/5">
-                <motion.div
-                  className="h-full rounded"
-                  style={{ background: e.color ?? "#8a8a8a" }}
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${(e.value / max) * 100}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                />
+        <>
+          <div className="space-y-3">
+            {visible.map((e, i) => (
+              <div key={e.label} className="flex items-center gap-3">
+                <span className="w-4 text-right font-display text-sm font-bold tabular-nums text-muted">
+                  {i + 1}
+                </span>
+                <span className="w-32 truncate text-sm text-silver">{e.label}</span>
+                <div className="h-4 flex-1 overflow-hidden rounded bg-white/5">
+                  <motion.div
+                    className="h-full rounded"
+                    style={{ background: e.color ?? "#8a8a8a" }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(e.value / max) * 100}%` }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                  />
+                </div>
+                <span className="w-8 text-right font-display text-sm font-bold tabular-nums">
+                  {e.value}
+                </span>
               </div>
-              <span className="w-8 text-right font-display text-sm font-bold tabular-nums">
-                {e.value}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          {hidden > 0 ? (
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.02] py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-silver transition hover:border-f1-red/50 hover:bg-f1-red/5 hover:text-white"
+            >
+              {expanded ? "Show less" : `Show ${hidden} more`}
+              <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", expanded && "rotate-180")} />
+            </button>
+          ) : null}
+        </>
       )}
     </GlassCard>
   );

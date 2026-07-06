@@ -5,6 +5,7 @@ import { ChevronDown, Sparkles, TriangleAlert } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { DriverPhotoTile } from "@/components/f1/driver-photo-tile";
 import { CountUp } from "@/components/ui/count-up";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -199,35 +200,32 @@ function PodiumCard({ entry, rank }: { entry: RacePredictionEntry; rank: number 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: rank * 0.06 }}
     >
-      <GlassCard
-        className={cn("relative overflow-hidden px-5 py-4", rank === 1 && "ring-1 ring-white/10")}
-      >
-        <span
-          className="absolute inset-x-0 top-0 h-[3px]"
-          style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
-        />
-        <div className="flex items-center justify-between">
-          <span className="font-display text-3xl font-bold italic text-white/10">
+      <DriverPhotoTile
+        driver={entry.driver}
+        teamColor={color}
+        className="aspect-[3/4]"
+        badge={
+          <span className="font-display text-4xl font-bold italic text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
             {String(rank).padStart(2, "0")}
           </span>
-          <DriverAvatar driver={entry.driver} teamColor={color} size="lg" />
-        </div>
-        <p className="mt-3 truncate font-display text-base font-bold">{entry.driver.full_name}</p>
-        <p className="truncate text-[11px] text-muted">
+        }
+      >
+        <p className="truncate font-display text-lg font-bold uppercase italic leading-none">
+          {entry.driver.full_name}
+        </p>
+        <p className="mt-1 truncate text-[11px] text-muted">
           {entry.constructor?.name ?? "—"} · P{entry.grid}
         </p>
-        <div className="mt-3 flex items-end justify-between">
+        <div className="mt-2.5 flex items-end justify-between border-t border-white/15 pt-2.5">
           <div>
             <p className="text-[10px] uppercase tracking-widest text-muted">Win</p>
-            <p className="font-display text-2xl font-bold tabular-nums leading-none">
+            <p className="font-numeric text-2xl font-bold tabular-nums leading-none">
               <CountUp value={entry.win_prob * 100} decimals={1} suffix="%" />
             </p>
           </div>
-          <p className="text-[11px] tabular-nums text-silver">
-            podium {pct(entry.podium_prob)}
-          </p>
+          <p className="text-[11px] tabular-nums text-silver">podium {pct(entry.podium_prob)}</p>
         </div>
-      </GlassCard>
+      </DriverPhotoTile>
     </motion.div>
   );
 }

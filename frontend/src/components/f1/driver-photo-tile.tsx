@@ -9,6 +9,8 @@ interface DriverPhotoTileProps {
   driver: Driver;
   teamColor?: string | null;
   className?: string;
+  /** small content pinned to the top-left (e.g. a rank numeral) */
+  badge?: React.ReactNode;
   /** overlaid at the bottom of the tile (name, stats, …) */
   children?: React.ReactNode;
 }
@@ -19,7 +21,13 @@ interface DriverPhotoTileProps {
  * while the photo itself stays perfectly still. Falls back to an initials block
  * when there's no headshot, and never shows a broken image (onError fallback).
  */
-export function DriverPhotoTile({ driver, teamColor, className, children }: DriverPhotoTileProps) {
+export function DriverPhotoTile({
+  driver,
+  teamColor,
+  className,
+  badge,
+  children,
+}: DriverPhotoTileProps) {
   const color = teamColor ?? "#3d3d3d";
   const [photoFailed, setPhotoFailed] = useState(false);
   const src = driver.headshot_url ? hiResPhoto(driver.headshot_url) : null;
@@ -63,6 +71,7 @@ export function DriverPhotoTile({ driver, teamColor, className, children }: Driv
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
+        {badge ? <div className="absolute left-3 top-2.5 z-10">{badge}</div> : null}
         {children ? <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5">{children}</div> : null}
       </div>
     </div>
