@@ -64,7 +64,7 @@ export default function ComparePage() {
         </div>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2">
             <DriverBanner detail={data.a} color={colorA} />
             <DriverBanner detail={data.b} color={colorB} />
           </div>
@@ -146,7 +146,7 @@ function DriverPicker({
 
 function DriverBanner({ detail, color }: { detail: DriverDetail; color: string }) {
   return (
-    <DriverPhotoTile driver={detail.driver} teamColor={color} className="h-[420px] sm:h-[480px]">
+    <DriverPhotoTile driver={detail.driver} teamColor={color} className="aspect-[3/4]">
       <p className="truncate font-display text-2xl font-bold uppercase italic leading-none">
         {nationalityFlag(detail.driver.nationality)} {detail.driver.full_name}
       </p>
