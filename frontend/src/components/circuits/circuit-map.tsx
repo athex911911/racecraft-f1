@@ -7,6 +7,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { CircleMarker, MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
 
 import { CIRCUIT_GEO } from "@/lib/design/circuit-tracks-geo";
+import { CIRCUIT_META, type CircuitMeta } from "@/lib/design/circuit-meta";
 import { cn } from "@/lib/utils";
 
 /**
@@ -75,7 +76,8 @@ type Labels = {
   startLabelPos: LL;
   splits: [LL, LL][];
   sectors: { label: string; pos: LL }[];
-  turns: { n: number; pos: LL }[];
+  turns: { n: number; name?: string; major?: boolean; pos: LL }[];
+  official: boolean;
 };
 
 /**
@@ -85,7 +87,7 @@ type Labels = {
  *  - numbered turns at curvature peaks
  * All placed in real lat/lng so they land on the tarmac.
  */
-function deriveLabels(track: LL[]): Labels {
+function deriveLabels(track: LL[], meta?: CircuitMeta): Labels {
   const n = track.length;
   const lat0 = track.reduce((s, p) => s + p[0], 0) / n;
   const kx = 111320 * Math.cos((lat0 * Math.PI) / 180);
@@ -143,6 +145,31 @@ function deriveLabels(track: LL[]): Labels {
     return best;
   };
 
+  // ---- official corner table (when we have one) --------------------------
+  if (meta) {
+    const sf = meta.sf ?? 0;
+    // fraction from S/F → geometry index (the trace may not start at S/F)
+    const fi = (t: number) => idxAtDist((((sf + t) % 1) + 1) % 1 * total);
+    const [s1, s2] = meta.sectors;
+    return {
+      startBar: barAt(fi(0), 26),
+      startLabelPos: outward(fi(0), 34),
+      splits: [barAt(fi(s1), 20), barAt(fi(s2), 20)],
+      sectors: [
+        { label: "S1", pos: outward(fi(s1 / 2), 30) },
+        { label: "S2", pos: outward(fi((s1 + s2) / 2), 30) },
+        { label: "S3", pos: outward(fi((s2 + 1) / 2), 30) },
+      ],
+      turns: meta.turns.map((tt) => ({
+        n: tt.n,
+        name: tt.name,
+        major: tt.major,
+        pos: outward(fi(tt.t), tt.major ? 24 : 15),
+      })),
+      official: true,
+    };
+  }
+
   // ---- turns: curvature peaks --------------------------------------------
   const ang: number[] = [];
   for (let i = 0; i < n; i++) {
@@ -194,11 +221,20 @@ function deriveLabels(track: LL[]): Labels {
       { label: "S3", pos: outward(idxAtDist((5 * total) / 6), 30) },
     ],
     turns,
+    official: false,
   };
 }
 
 // ---- label icons (inline styles → no global CSS, dodges the dev CSS cache) --
-function turnIcon(n: number) {
+function turnIcon(n: number, name?: string, major?: boolean) {
+  if (major && name) {
+    return L.divIcon({
+      className: "",
+      html: `<div style="display:flex;align-items:center;gap:5px;padding:2px 8px 2px 2px;border-radius:9999px;background:rgba(13,13,13,0.88);border:1px solid rgba(255,255,255,0.5);box-shadow:0 1px 5px rgba(0,0,0,0.75);white-space:nowrap"><span style="display:flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:9999px;background:#FF1801;color:#fff;font:800 10px/1 var(--font-barlow,sans-serif)">${n}</span><span style="color:#f5f5f5;font:700 10px/1 var(--font-barlow,sans-serif);letter-spacing:0.02em">${name}</span></div>`,
+      iconSize: [Math.round(28 + name.length * 6.4), 20],
+      iconAnchor: [11, 10],
+    });
+  }
   return L.divIcon({
     className: "",
     html: `<div style="display:flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:9999px;background:rgba(13,13,13,0.82);border:1px solid rgba(255,255,255,0.55);color:#fff;font:700 10px/1 var(--font-barlow,sans-serif);box-shadow:0 1px 4px rgba(0,0,0,0.7)">${n}</div>`,
@@ -292,8 +328,9 @@ export function CircuitMap({
   const [sel, setSel] = useState<LineKey>("optimal");
   const [showLabels, setShowLabels] = useState(true);
   const track = CIRCUIT_GEO[circuitRef] as LL[] | undefined;
+  const meta = CIRCUIT_META[circuitRef];
   const lines = useMemo(() => (track ? deriveLines(track) : null), [track]);
-  const labels = useMemo(() => (track ? deriveLabels(track) : null), [track]);
+  const labels = useMemo(() => (track ? deriveLabels(track, meta) : null), [track, meta]);
   const selColor = LINES.find((l) => l.key === sel)!.color;
   const center: LL = track ? track[0] : [lat ?? 0, lng ?? 0];
 
@@ -368,7 +405,12 @@ export function CircuitMap({
               ))}
 
               {labels.turns.map((t) => (
-                <Marker key={`turn-${t.n}`} position={t.pos} icon={turnIcon(t.n)} interactive={false} />
+                <Marker
+                  key={`turn-${t.n}`}
+                  position={t.pos}
+                  icon={turnIcon(t.n, t.name, t.major)}
+                  interactive={false}
+                />
               ))}
             </>
           ) : null}
@@ -440,7 +482,11 @@ export function CircuitMap({
           {track
             ? `${LINES.find((l) => l.key === sel)!.label} line · ${LINES.find((l) => l.key === sel)!.note}`
             : "Satellite view — track overlay unavailable for this circuit"}
-          <span className="ml-1 text-muted">· lines & labels are geometry-modelled, not telemetry</span>
+          <span className="ml-1 text-muted">
+            {labels?.official
+              ? "· official corner names · positions & sectors approximate"
+              : "· lines & labels are geometry-modelled, not telemetry"}
+          </span>
         </p>
       </div>
     </div>
