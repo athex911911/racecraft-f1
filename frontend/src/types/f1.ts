@@ -487,3 +487,64 @@ export interface SearchResults {
   constructors: SearchConstructor[];
   circuits: SearchCircuit[];
 }
+
+// --- Strategy simulator (Phase 3) ---
+export interface StrategyCircuitListItem {
+  circuit_ref: string;
+  name: string;
+  country: string | null;
+  laps: number;
+  base_lap_s: number;
+  pit_loss_s: number;
+  on_calendar: boolean;
+  has_pace: boolean;
+}
+
+export interface StrategyCompound {
+  key: string;
+  name: string;
+  color: string;
+  offset: number;
+  deg: number;
+}
+
+export interface StrategyStint {
+  compound: string;
+  name: string;
+  color: string;
+  start_lap: number;
+  end_lap: number;
+  laps: number;
+}
+
+export interface StrategyOption {
+  key: string;
+  label: string;
+  stops: number;
+  stints: StrategyStint[];
+  pits: number[];
+  compound_sequence: string[];
+  total_time_s: number;
+  total_time_str: string;
+  avg_lap_s: number;
+  lap_pace: number[];
+  delta_s: number;
+}
+
+export interface StrategyCircuitInfo {
+  circuit_ref: string;
+  name: string;
+  country: string | null;
+  laps: number;
+  base_lap_s: number;
+  base_lap_str: string;
+  pit_loss_s: number;
+  deg_mode: string;
+}
+
+export interface StrategySim {
+  circuit: StrategyCircuitInfo;
+  compounds: StrategyCompound[];
+  optimal_key: string;
+  strategies: StrategyOption[];
+}

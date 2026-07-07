@@ -497,3 +497,64 @@ class SearchOut(BaseModel):
     drivers: list[SearchDriver]
     constructors: list[SearchConstructor]
     circuits: list[SearchCircuit]
+
+
+# --- strategy simulator -----------------------------------------------------
+class StrategyCircuitListItem(BaseModel):
+    circuit_ref: str
+    name: str
+    country: str | None
+    laps: int
+    base_lap_s: float
+    pit_loss_s: float
+    on_calendar: bool
+    has_pace: bool
+
+
+class StrategyCompound(BaseModel):
+    key: str
+    name: str
+    color: str
+    offset: float
+    deg: float
+
+
+class StrategyStint(BaseModel):
+    compound: str
+    name: str
+    color: str
+    start_lap: int
+    end_lap: int
+    laps: int
+
+
+class StrategyOption(BaseModel):
+    key: str
+    label: str
+    stops: int
+    stints: list[StrategyStint]
+    pits: list[int]
+    compound_sequence: list[str]
+    total_time_s: float
+    total_time_str: str
+    avg_lap_s: float
+    lap_pace: list[float]
+    delta_s: float
+
+
+class StrategyCircuitInfo(BaseModel):
+    circuit_ref: str
+    name: str
+    country: str | None
+    laps: int
+    base_lap_s: float
+    base_lap_str: str
+    pit_loss_s: float
+    deg_mode: str
+
+
+class StrategySimOut(BaseModel):
+    circuit: StrategyCircuitInfo
+    compounds: list[StrategyCompound]
+    optimal_key: str
+    strategies: list[StrategyOption]

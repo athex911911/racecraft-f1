@@ -23,6 +23,8 @@ import type {
   RaceSummary,
   SearchResults,
   SeasonProgress,
+  StrategyCircuitListItem,
+  StrategySim,
   TrendingStat,
 } from "@/types/f1";
 
@@ -202,5 +204,22 @@ export function useHealth() {
     queryKey: ["health"],
     queryFn: () => apiGet<HealthStatus>("/api/health"),
     refetchInterval: 60_000,
+  });
+}
+
+export function useStrategyCircuits() {
+  return useQuery({
+    queryKey: ["strategy-circuits"],
+    queryFn: () => apiGet<StrategyCircuitListItem[]>("/api/v1/strategy/circuits"),
+    staleTime: 300_000,
+  });
+}
+
+export function useStrategySim(circuitRef: string | undefined, degMode: string) {
+  return useQuery({
+    queryKey: ["strategy", circuitRef, degMode],
+    queryFn: () => apiGet<StrategySim>(`/api/v1/strategy/${circuitRef}`, { deg_mode: degMode }),
+    enabled: !!circuitRef,
+    staleTime: 300_000,
   });
 }
