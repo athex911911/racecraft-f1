@@ -10,9 +10,13 @@ import { useState } from "react";
 import { DriverAvatar } from "@/components/f1/driver-avatar";
 import { GlassCard } from "@/components/ui/glass-card";
 
-// Leaflet needs the browser — load the satellite map client-side only.
+// Leaflet needs the browser — load the satellite maps client-side only.
 const CircuitMap = dynamic(
   () => import("@/components/circuits/circuit-map").then((m) => m.CircuitMap),
+  { ssr: false, loading: () => <Skeleton className="h-[460px] w-full sm:h-[580px]" /> },
+);
+const CircuitHeatmap = dynamic(
+  () => import("@/components/circuits/circuit-heatmap").then((m) => m.CircuitHeatmap),
   { ssr: false, loading: () => <Skeleton className="h-[460px] w-full sm:h-[580px]" /> },
 );
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -177,6 +181,15 @@ export default function CircuitDetailPage() {
           subtitle="Real aerial view — fastest, optimal and slowest lines through the lap"
         />
         <CircuitMap circuitRef={c.circuit_ref} lat={c.lat} lng={c.lng} />
+      </Reveal>
+
+      {/* modelled speed / throttle / braking heatmap on the satellite view */}
+      <Reveal>
+        <SectionHeading
+          title="Performance Heatmap"
+          subtitle="Modelled speed, throttle and braking around the lap — coloured onto the real circuit"
+        />
+        <CircuitHeatmap circuitRef={c.circuit_ref} lat={c.lat} lng={c.lng} />
       </Reveal>
 
       {/* most successful here */}
