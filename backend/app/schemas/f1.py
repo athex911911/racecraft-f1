@@ -551,6 +551,8 @@ class StrategyCircuitInfo(BaseModel):
     base_lap_str: str
     pit_loss_s: float
     deg_mode: str
+    real_avg_stops: float | None = None
+    calibrated: bool = False
 
 
 class StrategySimOut(BaseModel):
@@ -574,3 +576,59 @@ class SuitabilityOut(BaseModel):
     circuit_ref: str
     track_type: str | None
     entries: list[SuitabilityEntry]
+
+
+# --- weather + tyre analytics (Phase 3, FastF1) ------------------------------
+class RaceConditionLine(BaseModel):
+    season: int
+    race_name: str
+    air_temp: float | None
+    track_temp: float | None
+    rainfall: bool
+    wet_fraction: float
+
+
+class CircuitConditionsOut(BaseModel):
+    circuit_ref: str
+    races_with_data: int
+    avg_air_temp: float | None
+    avg_track_temp: float | None
+    wet_races: int
+    wet_rate: float | None
+    recent: list[RaceConditionLine]
+
+
+class WetRatingEntry(BaseModel):
+    driver: DriverOut
+    constructor: ConstructorOut | None
+    wet_races: int
+    wet_avg_finish: float
+    dry_avg_finish: float | None
+    delta: float
+
+
+class WetRatingsOut(BaseModel):
+    wet_race_count: int
+    entries: list[WetRatingEntry]
+
+
+class CompoundUsage(BaseModel):
+    compound: str
+    color: str
+    stints: int
+    laps: int
+    share: float
+    avg_stint_laps: float
+    avg_pace_s: float | None
+    deg_s_per_lap: float | None
+
+
+class CircuitTyresOut(BaseModel):
+    circuit_ref: str
+    races_with_data: int
+    compounds: list[CompoundUsage]
+
+
+class TyreOverviewOut(BaseModel):
+    races_with_data: int
+    compounds: list[CompoundUsage]

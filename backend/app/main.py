@@ -6,6 +6,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from sqlalchemy import text
 
+from app.api.v1.analytics import router as analytics_router
 from app.api.v1.calendar import router as calendar_router
 from app.api.v1.circuits import router as circuits_router
 from app.api.v1.compare import router as compare_router
@@ -44,6 +45,7 @@ app.add_middleware(
 
 
 app.include_router(dashboard_router)
+app.include_router(analytics_router)
 app.include_router(drivers_router)
 app.include_router(constructors_router)
 app.include_router(circuits_router)

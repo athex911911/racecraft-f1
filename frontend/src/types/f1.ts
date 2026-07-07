@@ -540,6 +540,8 @@ export interface StrategyCircuitInfo {
   base_lap_str: string;
   pit_loss_s: number;
   deg_mode: string;
+  real_avg_stops: number | null;
+  calibrated: boolean;
 }
 
 export interface StrategySim {
@@ -563,4 +565,60 @@ export interface SuitabilityResult {
   circuit_ref: string;
   track_type: string | null;
   entries: SuitabilityEntry[];
+}
+
+// --- Weather + tyre analytics (Phase 3, FastF1) ---
+export interface RaceConditionLine {
+  season: number;
+  race_name: string;
+  air_temp: number | null;
+  track_temp: number | null;
+  rainfall: boolean;
+  wet_fraction: number;
+}
+
+export interface CircuitConditions {
+  circuit_ref: string;
+  races_with_data: number;
+  avg_air_temp: number | null;
+  avg_track_temp: number | null;
+  wet_races: number;
+  wet_rate: number | null;
+  recent: RaceConditionLine[];
+}
+
+export interface WetRatingEntry {
+  driver: Driver;
+  constructor: Constructor | null;
+  wet_races: number;
+  wet_avg_finish: number;
+  dry_avg_finish: number | null;
+  delta: number;
+}
+
+export interface WetRatings {
+  wet_race_count: number;
+  entries: WetRatingEntry[];
+}
+
+export interface CompoundUsage {
+  compound: string;
+  color: string;
+  stints: number;
+  laps: number;
+  share: number;
+  avg_stint_laps: number;
+  avg_pace_s: number | null;
+  deg_s_per_lap: number | null;
+}
+
+export interface CircuitTyres {
+  circuit_ref: string;
+  races_with_data: number;
+  compounds: CompoundUsage[];
+}
+
+export interface TyreOverview {
+  races_with_data: number;
+  compounds: CompoundUsage[];
 }

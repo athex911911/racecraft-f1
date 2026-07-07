@@ -17,6 +17,7 @@ frontend/next-env.d.ts
 # data caches
 pipeline/cache/
 fastf1_cache/
+.fastf1cache/
 
 # OS / editor
 Thumbs.db

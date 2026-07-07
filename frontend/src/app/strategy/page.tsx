@@ -134,7 +134,13 @@ export default function StrategyPage() {
             <StatTile
               label="Optimal"
               value={sim.optimal_key.replace("-stop", "")}
-              sub={sim.optimal_key.includes("1") ? "stop" : "stops"}
+              sub={
+                sim.circuit.real_avg_stops != null
+                  ? `real avg ${sim.circuit.real_avg_stops}`
+                  : sim.optimal_key.includes("1")
+                    ? "stop"
+                    : "stops"
+              }
               accent
             />
           </div>
@@ -194,9 +200,11 @@ export default function StrategyPage() {
           </GlassCard>
 
           <p className="pb-2 text-center text-[11px] text-muted">
-            Deterministic model — race distance &amp; reference pace are from ingested results;
-            tyre-degradation and pit-loss are calibrated parameters. Optimises for lap time, not
-            track position or safety cars.
+            Deterministic model — race distance &amp; reference pace are from ingested results.
+            {sim.circuit.calibrated
+              ? " Tyre severity is calibrated from real FastF1 stint lengths at this circuit."
+              : " Tyre-degradation and pit-loss are calibrated parameters."}{" "}
+            Optimises for lap time, not track position or safety cars.
           </p>
         </>
       )}

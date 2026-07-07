@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     Date,
     DateTime,
     Float,
@@ -211,3 +212,41 @@ class IngestCheckpoint(Base):
     entity: Mapped[str] = mapped_column(String(64))
     season: Mapped[int] = mapped_column(Integer, default=0)  # 0 = season-independent entity
     completed_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class RaceWeather(Base):
+    """Per-race weather summary from FastF1 (2018+ race sessions)."""
+
+    __tablename__ = "race_weather"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    race_id: Mapped[int] = mapped_column(ForeignKey("races.id"), unique=True, index=True)
+    air_temp: Mapped[float | None] = mapped_column(Float)
+    track_temp: Mapped[float | None] = mapped_column(Float)
+    humidity: Mapped[float | None] = mapped_column(Float)
+    wind_speed: Mapped[float | None] = mapped_column(Float)
+    rainfall: Mapped[bool] = mapped_column(Boolean, default=False)
+    # share of the race run on intermediate/wet tyres — how wet it actually was
+    wet_fraction: Mapped[float] = mapped_column(Float, default=0.0)
+
+
+class TyreStint(Base):
+    """One driver's tyre stint in a race (FastF1 lap data)."""
+
+    __tablename__ = "tyre_stints"
+    __table_args__ = (
+        UniqueConstraint("race_id", "driver_id", "stint", name="uq_stint_race_driver_stint"),
+        Index("ix_stint_compound", "compound"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    race_id: Mapped[int] = mapped_column(ForeignKey("races.id"), index=True)
+    driver_id: Mapped[int] = mapped_column(ForeignKey("drivers.id"), index=True)
+    stint: Mapped[int] = mapped_column(Integer)
+    compound: Mapped[str | None] = mapped_column(String(16))
+    start_lap: Mapped[int | None] = mapped_column(Integer)
+    laps: Mapped[int | None] = mapped_column(Integer)
+    tyre_life_start: Mapped[int | None] = mapped_column(Integer)
+    avg_lap_s: Mapped[float | None] = mapped_column(Float)
+    # fitted degradation slope (s/lap); null when too few clean green laps
+    deg_s_per_lap: Mapped[float | None] = mapped_column(Float)

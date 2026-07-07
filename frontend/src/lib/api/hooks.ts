@@ -21,12 +21,15 @@ import type {
   RaceDetail,
   RacePrediction,
   RaceSummary,
+  CircuitConditions,
+  CircuitTyres,
   SearchResults,
   SeasonProgress,
   StrategyCircuitListItem,
   StrategySim,
   SuitabilityResult,
   TrendingStat,
+  WetRatings,
 } from "@/types/f1";
 
 export function useDriverStandings(season = "current") {
@@ -136,6 +139,32 @@ export function useCircuitSuitability(circuitRef: string) {
     queryKey: ["circuit-suitability", circuitRef],
     queryFn: () => apiGet<SuitabilityResult>(`/api/v1/circuits/${circuitRef}/suitability`),
     enabled: Boolean(circuitRef),
+    staleTime: 300_000,
+  });
+}
+
+export function useCircuitConditions(circuitRef: string) {
+  return useQuery({
+    queryKey: ["circuit-conditions", circuitRef],
+    queryFn: () => apiGet<CircuitConditions>(`/api/v1/circuits/${circuitRef}/conditions`),
+    enabled: Boolean(circuitRef),
+    staleTime: 300_000,
+  });
+}
+
+export function useCircuitTyres(circuitRef: string) {
+  return useQuery({
+    queryKey: ["circuit-tyres", circuitRef],
+    queryFn: () => apiGet<CircuitTyres>(`/api/v1/circuits/${circuitRef}/tyres`),
+    enabled: Boolean(circuitRef),
+    staleTime: 300_000,
+  });
+}
+
+export function useWetWeather() {
+  return useQuery({
+    queryKey: ["wet-weather"],
+    queryFn: () => apiGet<WetRatings>("/api/v1/analytics/wet-weather"),
     staleTime: 300_000,
   });
 }

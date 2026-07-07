@@ -19,12 +19,14 @@ compounds" rule is enforced when picking the optimum.
 from __future__ import annotations
 
 import re
+from collections import defaultdict
 from dataclasses import dataclass
+from statistics import mean, median
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models.f1 import Circuit, Race, Result
+from app.models.f1 import Circuit, Race, Result, TyreStint
 
 
 # --- tyre + fuel model (calibrated, tunable) --------------------------------
@@ -307,6 +309,33 @@ def list_circuits(db: Session) -> list[dict]:
     return out
 
 
+def _real_tyre(db: Session, circuit_id: int, race_laps: int) -> tuple[float | None, float | None]:
+    """From FastF1 stints at this circuit: real avg pit stops + a severity
+    multiplier calibrated from how much of the race a slick stint covers
+    (shorter stints ⇒ harsher on tyres). Returns (avg_stops, severity|None)."""
+    rows = db.execute(
+        select(TyreStint.race_id, TyreStint.driver_id, TyreStint.laps, TyreStint.compound)
+        .join(Race, Race.id == TyreStint.race_id)
+        .where(Race.circuit_id == circuit_id)
+    ).all()
+    if not rows:
+        return None, None
+    counts: dict[tuple[int, int], int] = defaultdict(int)
+    slick_lens: list[int] = []
+    for rid, did, laps, compound in rows:
+        counts[(rid, did)] += 1
+        if compound in ("SOFT", "MEDIUM", "HARD") and laps:
+            slick_lens.append(laps)
+    avg_stops = round(median(counts.values()) - 1, 1) if counts else None
+    sev = None
+    if slick_lens and race_laps:
+        frac = mean(slick_lens) / race_laps
+        if frac > 0:
+            # ~0.42 of the race per slick stint ≈ a 2-3 stop norm at severity 1.0
+            sev = round(max(0.6, min(1.5, 0.42 / frac)), 2)
+    return avg_stops, sev
+
+
 def simulate(db: Session, circuit_ref: str, deg_mode: str = "normal") -> dict | None:
     circuit = db.execute(
         select(Circuit).where(Circuit.circuit_ref == circuit_ref)
@@ -316,7 +345,9 @@ def simulate(db: Session, circuit_ref: str, deg_mode: str = "normal") -> dict | 
     params = _params(db, circuit)
     if params is None:
         return None
-    laps, base, pit_loss, base_sev = params
+    laps, base, pit_loss, hand_sev = params
+    real_stops, real_sev = _real_tyre(db, circuit.id, laps)
+    base_sev = real_sev if real_sev is not None else hand_sev  # calibrate from real data
     sev = base_sev * DEG_MODE.get(deg_mode, 1.0)
     fuel_prefix, deg_cum = _build_tables(laps, sev)
 
@@ -345,6 +376,8 @@ def simulate(db: Session, circuit_ref: str, deg_mode: str = "normal") -> dict | 
             "base_lap_str": _fmt(base),
             "pit_loss_s": pit_loss,
             "deg_mode": deg_mode,
+            "real_avg_stops": real_stops,
+            "calibrated": real_sev is not None,
         },
         "compounds": [
             {"key": c.key, "name": c.name, "color": c.color, "offset": c.offset, "deg": c.deg}

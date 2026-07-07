@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, CalendarDays, ChevronDown, Timer } from "lucide-react";
+import { ArrowLeft, CalendarDays, ChevronDown, CloudRain, Sun, Timer } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -22,7 +22,13 @@ const CircuitHeatmap = dynamic(
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatTile } from "@/components/ui/stat-tile";
-import { useCircuitDetail, useCircuitSuitability } from "@/lib/api/hooks";
+import {
+  useCircuitConditions,
+  useCircuitDetail,
+  useCircuitSuitability,
+  useCircuitTyres,
+  useWetWeather,
+} from "@/lib/api/hooks";
 import { CIRCUIT_IMAGES, CIRCUIT_PHOTOS } from "@/lib/design/images";
 import { cn, countryFlag } from "@/lib/utils";
 import type { CircuitWinnerLine, TopEntry } from "@/types/f1";
@@ -201,6 +207,10 @@ export default function CircuitDetailPage() {
         <TrackSuitability circuitRef={c.circuit_ref} />
       </Reveal>
 
+      {/* FastF1-derived weather + tyre analytics (render only when data exists) */}
+      <RaceConditions circuitRef={c.circuit_ref} />
+      <TyreStrategy circuitRef={c.circuit_ref} />
+
       {/* most successful here */}
       {data.races_held > 0 ? (
         <Reveal>
@@ -226,6 +236,150 @@ export default function CircuitDetailPage() {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/** FastF1 weather: circuit conditions + grid-wide wet-weather form. Hidden until data lands. */
+function RaceConditions({ circuitRef }: { circuitRef: string }) {
+  const { data: cond } = useCircuitConditions(circuitRef);
+  const { data: wet } = useWetWeather();
+  if (!cond || cond.races_with_data === 0) return null;
+  const wetPct = Math.round((cond.wet_rate ?? 0) * 100);
+
+  return (
+    <Reveal>
+      <SectionHeading
+        title="Race Conditions"
+        subtitle="Weather here and who thrives in the wet — from FastF1 session data"
+      />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard className="p-5">
+          <div className="grid grid-cols-3 gap-3">
+            <MiniStat label="Avg Air" value={cond.avg_air_temp != null ? `${cond.avg_air_temp}°` : "—"} />
+            <MiniStat label="Avg Track" value={cond.avg_track_temp != null ? `${cond.avg_track_temp}°` : "—"} />
+            <MiniStat label="Wet Races" value={`${wetPct}%`} accent={wetPct >= 25} />
+          </div>
+          <div className="mt-4 space-y-1">
+            {cond.recent.map((r) => {
+              const isWet = r.wet_fraction >= 0.06 || r.rainfall;
+              return (
+                <div
+                  key={`${r.season}-${r.race_name}`}
+                  className="flex items-center justify-between border-b border-white/4 py-1.5 text-sm last:border-0"
+                >
+                  <span className="font-display font-bold tabular-nums">{r.season}</span>
+                  <span className="tabular-nums text-muted">
+                    {r.air_temp != null ? `${r.air_temp}° air` : "—"} ·{" "}
+                    {r.track_temp != null ? `${r.track_temp}° track` : "—"}
+                  </span>
+                  {isWet ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+                      <CloudRain className="h-3 w-3" /> Wet
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted">
+                      <Sun className="h-3 w-3" /> Dry
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
+            Wet-Weather Form · current grid
+          </p>
+          {wet && wet.entries.length > 0 ? (
+            <>
+              <div className="space-y-2">
+                {wet.entries.slice(0, 6).map((e) => (
+                  <div key={e.driver.id} className="flex items-center gap-3">
+                    <DriverAvatar driver={e.driver} teamColor={e.constructor?.color} size="sm" />
+                    <span className="flex-1 truncate text-sm font-semibold">{e.driver.full_name}</span>
+                    <span className="text-[11px] text-muted">{e.wet_avg_finish.toFixed(1)} avg</span>
+                    <span
+                      className={cn(
+                        "w-12 text-right font-display text-sm font-bold tabular-nums",
+                        e.delta > 0 ? "text-success" : e.delta < 0 ? "text-danger" : "text-muted",
+                      )}
+                    >
+                      {e.delta > 0 ? `+${e.delta.toFixed(1)}` : e.delta.toFixed(1)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 border-t border-white/5 pt-3 text-[10px] text-muted">
+                Positions gained vs the driver&apos;s own dry-race average — the delta controls for car
+                pace. {wet.wet_race_count} wet races since 2019.
+              </p>
+            </>
+          ) : (
+            <p className="py-6 text-center text-sm text-muted">Not enough wet-race data yet.</p>
+          )}
+        </GlassCard>
+      </div>
+    </Reveal>
+  );
+}
+
+function MiniStat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5 text-center">
+      <p className="text-[10px] uppercase tracking-widest text-muted">{label}</p>
+      <p className={cn("mt-0.5 font-display text-lg font-bold tabular-nums", accent && "text-accent")}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+/** FastF1 tyre analytics for this circuit: compound usage + stint-length durability. */
+function TyreStrategy({ circuitRef }: { circuitRef: string }) {
+  const { data } = useCircuitTyres(circuitRef);
+  if (!data || data.compounds.length === 0) return null;
+  const maxStint = Math.max(...data.compounds.map((c) => c.avg_stint_laps), 1);
+
+  return (
+    <Reveal>
+      <SectionHeading
+        title="Tyre Strategy"
+        subtitle={`Compound usage & durability here — ${data.races_with_data} races of FastF1 stint data`}
+      />
+      <GlassCard className="p-5">
+        <div className="space-y-3">
+          {data.compounds.map((c) => (
+            <div key={c.compound} className="flex items-center gap-3">
+              <span
+                className="h-3 w-3 shrink-0 rounded-full ring-1 ring-white/25"
+                style={{ background: c.color }}
+              />
+              <span className="w-24 shrink-0 text-sm font-semibold">{c.compound}</span>
+              <div className="h-4 flex-1 overflow-hidden rounded bg-white/5">
+                <motion.div
+                  className="h-full rounded"
+                  style={{ background: c.color, opacity: 0.85 }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(c.avg_stint_laps / maxStint) * 100}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                />
+              </div>
+              <span className="w-16 shrink-0 text-right text-sm tabular-nums">
+                <b>{c.avg_stint_laps}</b> <span className="text-[11px] text-muted">laps</span>
+              </span>
+              <span className="hidden w-16 shrink-0 text-right text-xs text-muted sm:inline">
+                {Math.round(c.share * 100)}% used
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 border-t border-white/5 pt-3 text-[10px] text-muted">
+          Average stint length is the honest durability signal — softer compounds are pushed harder
+          and swapped sooner. From FastF1 race laps.
+        </p>
+      </GlassCard>
+    </Reveal>
   );
 }
 
