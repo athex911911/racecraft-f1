@@ -548,3 +548,19 @@ export interface StrategySim {
   optimal_key: string;
   strategies: StrategyOption[];
 }
+
+// --- Track suitability (Phase 3) ---
+export interface SuitabilityEntry {
+  driver: Driver;
+  constructor: Constructor | null;
+  score: number;
+  here_starts: number;
+  here_best: number | null;
+  reason: string;
+}
+
+export interface SuitabilityResult {
+  circuit_ref: string;
+  track_type: string | null;
+  entries: SuitabilityEntry[];
+}

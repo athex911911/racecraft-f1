@@ -558,3 +558,19 @@ class StrategySimOut(BaseModel):
     compounds: list[StrategyCompound]
     optimal_key: str
     strategies: list[StrategyOption]
+
+
+# --- track suitability ------------------------------------------------------
+class SuitabilityEntry(BaseModel):
+    driver: DriverOut
+    constructor: ConstructorOut | None
+    score: float
+    here_starts: int
+    here_best: int | None
+    reason: str
+
+
+class SuitabilityOut(BaseModel):
+    circuit_ref: str
+    track_type: str | None
+    entries: list[SuitabilityEntry]

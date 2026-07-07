@@ -22,7 +22,7 @@ const CircuitHeatmap = dynamic(
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatTile } from "@/components/ui/stat-tile";
-import { useCircuitDetail } from "@/lib/api/hooks";
+import { useCircuitDetail, useCircuitSuitability } from "@/lib/api/hooks";
 import { CIRCUIT_IMAGES, CIRCUIT_PHOTOS } from "@/lib/design/images";
 import { cn, countryFlag } from "@/lib/utils";
 import type { CircuitWinnerLine, TopEntry } from "@/types/f1";
@@ -192,6 +192,15 @@ export default function CircuitDetailPage() {
         <CircuitHeatmap circuitRef={c.circuit_ref} lat={c.lat} lng={c.lng} />
       </Reveal>
 
+      {/* current-grid fit for this track */}
+      <Reveal>
+        <SectionHeading
+          title="Track Suitability"
+          subtitle="How the current grid fits this circuit — record here, similar tracks & current form"
+        />
+        <TrackSuitability circuitRef={c.circuit_ref} />
+      </Reveal>
+
       {/* most successful here */}
       {data.races_held > 0 ? (
         <Reveal>
@@ -217,6 +226,75 @@ export default function CircuitDetailPage() {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/** Current-grid suitability ranking for this circuit: avatar, reason, score bar. */
+function TrackSuitability({ circuitRef }: { circuitRef: string }) {
+  const { data, isLoading } = useCircuitSuitability(circuitRef);
+  const [expanded, setExpanded] = useState(false);
+
+  if (isLoading) return <Skeleton className="h-[340px]" />;
+  if (!data || data.entries.length === 0) return null;
+
+  const max = Math.max(...data.entries.map((e) => e.score), 1);
+  const visible = expanded ? data.entries : data.entries.slice(0, 8);
+  const hidden = data.entries.length - 8;
+
+  return (
+    <GlassCard className="p-4 sm:p-5">
+      <div className="space-y-2">
+        {visible.map((e, i) => (
+          <div
+            key={e.driver.id}
+            className="flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-white/[0.03]"
+          >
+            <span className="w-5 text-right font-display text-sm font-bold tabular-nums text-muted">
+              {i + 1}
+            </span>
+            <DriverAvatar driver={e.driver} teamColor={e.constructor?.color} size="sm" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="truncate text-sm font-semibold">{e.driver.full_name}</span>
+                <span
+                  className="hidden h-2 w-2 shrink-0 rounded-sm sm:inline-block"
+                  style={{ background: e.constructor?.color ?? "#3d3d3d" }}
+                />
+                <span className="hidden truncate text-xs text-muted sm:inline">
+                  {e.constructor?.name ?? "—"}
+                </span>
+              </div>
+              <p className="truncate text-[11px] text-muted">{e.reason}</p>
+            </div>
+            <div className="hidden h-2.5 w-24 overflow-hidden rounded-full bg-white/5 sm:block lg:w-40">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ background: e.constructor?.color ?? "#8a8a8a" }}
+                initial={{ width: 0 }}
+                animate={{ width: `${(e.score / max) * 100}%` }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              />
+            </div>
+            <span className="w-9 text-right font-display text-sm font-bold tabular-nums">
+              {e.score.toFixed(0)}
+            </span>
+          </div>
+        ))}
+      </div>
+      {hidden > 0 ? (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.02] py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-silver transition hover:border-f1-red/50 hover:bg-f1-red/5 hover:text-white"
+        >
+          {expanded ? "Show less" : `Show ${hidden} more`}
+          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", expanded && "rotate-180")} />
+        </button>
+      ) : null}
+      <p className="mt-3 border-t border-white/5 pt-3 text-[10px] text-muted">
+        Score blends record at this circuit, at similar {data.track_type ?? ""} tracks, and current
+        form — relative to the {data.entries.length}-car grid.
+      </p>
+    </GlassCard>
   );
 }
 

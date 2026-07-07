@@ -25,6 +25,7 @@ import type {
   SeasonProgress,
   StrategyCircuitListItem,
   StrategySim,
+  SuitabilityResult,
   TrendingStat,
 } from "@/types/f1";
 
@@ -127,6 +128,15 @@ export function useCircuits() {
   return useQuery({
     queryKey: ["circuits"],
     queryFn: () => apiGet<CircuitListItem[]>("/api/v1/circuits"),
+  });
+}
+
+export function useCircuitSuitability(circuitRef: string) {
+  return useQuery({
+    queryKey: ["circuit-suitability", circuitRef],
+    queryFn: () => apiGet<SuitabilityResult>(`/api/v1/circuits/${circuitRef}/suitability`),
+    enabled: Boolean(circuitRef),
+    staleTime: 300_000,
   });
 }
 
