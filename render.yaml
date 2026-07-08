@@ -1,0 +1,20 @@
+# Optional Render Blueprint for the Racecraft backend (Docker).
+# Use via Render → New → Blueprint, then paste DATABASE_URL and CORS_ORIGINS.
+# The frontend deploys separately on Vercel. See docs/DEPLOYMENT.md.
+services:
+  - type: web
+    name: racecraft-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL      # postgresql+psycopg://…?sslmode=require  (set in dashboard)
+        sync: false
+      - key: JWT_SECRET        # auto-generated strong secret
+        generateValue: true
+      - key: CORS_ORIGINS      # https://<your-app>.vercel.app  (set in dashboard)
+        sync: false
+      - key: DEBUG
+        value: "false"
