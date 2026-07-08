@@ -1,6 +1,7 @@
 "use client";
 
 import { TriangleAlert, Trophy } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import {
   CartesianGrid,
@@ -19,8 +20,15 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatTile } from "@/components/ui/stat-tile";
 import { useStrategyCircuits, useStrategySim } from "@/lib/api/hooks";
+import { CIRCUIT_GEO } from "@/lib/design/circuit-tracks-geo";
 import { cn } from "@/lib/utils";
 import type { StrategyOption, StrategyStint } from "@/types/f1";
+
+// Leaflet needs the browser — load the satellite heatmap client-side only.
+const CircuitHeatmap = dynamic(
+  () => import("@/components/circuits/circuit-heatmap").then((m) => m.CircuitHeatmap),
+  { ssr: false, loading: () => <Skeleton className="h-[460px] w-full sm:h-[580px]" /> },
+);
 
 const DEG_MODES = [
   { key: "low", label: "Low" },
@@ -179,6 +187,22 @@ export default function StrategyPage() {
               <PaceChart option={active} laps={sim.circuit.laps} />
             </GlassCard>
           </div>
+
+          {/* modelled speed / throttle / braking heatmap on the real circuit */}
+          {CIRCUIT_GEO[sim.circuit.circuit_ref] ? (
+            <div>
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h3 className="font-display text-sm font-bold uppercase tracking-widest text-silver">
+                  Performance Heatmap
+                </h3>
+                <p className="text-xs text-muted">
+                  {sim.circuit.name.replace(" Grand Prix Circuit", "").replace(" Circuit", "")} ·
+                  modelled speed, throttle &amp; braking — heavy-braking zones drive tyre wear
+                </p>
+              </div>
+              <CircuitHeatmap circuitRef={sim.circuit.circuit_ref} />
+            </div>
+          ) : null}
 
           {/* compound legend + honest model note */}
           <GlassCard className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">

@@ -622,3 +622,128 @@ export interface TyreOverview {
   races_with_data: number;
   compounds: CompoundUsage[];
 }
+
+// --- Auth + profiles (Phase 4) ---
+export type FavoriteKind = "driver" | "constructor" | "circuit";
+
+export interface Favorite {
+  entity_type: FavoriteKind;
+  entity_ref: string;
+}
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  username: string;
+  display_name: string | null;
+  theme: string;
+  created_at: string;
+  favorites: Favorite[];
+}
+
+export interface AuthToken {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
+}
+
+// --- Prediction League (Phase 4) ---
+export type LeagueRaceStatus = "open" | "awaiting" | "completed";
+
+export interface LeagueDriverOption {
+  driver: Driver;
+  constructor: Constructor | null;
+}
+
+export interface PredictionPicks {
+  pole_driver_id: number | null;
+  winner_driver_id: number | null;
+  p2_driver_id: number | null;
+  p3_driver_id: number | null;
+  fastest_lap_driver_id: number | null;
+}
+
+export type SubmitPrediction = PredictionPicks & { race_id: number };
+
+export interface ScoreBreakdown {
+  pole: number;
+  winner: number;
+  podium: number;
+  fastest_lap: number;
+  total: number;
+}
+
+export interface LeagueRaceItem {
+  race_id: number;
+  season: number;
+  round: number;
+  name: string;
+  date: string;
+  time: string | null;
+  circuit: Circuit;
+  status: LeagueRaceStatus;
+  predicted: boolean;
+  your_points: number | null;
+}
+
+export interface LeagueRaces {
+  season: number;
+  max_points: number;
+  races: LeagueRaceItem[];
+}
+
+export interface LeagueRaceDetail {
+  race: LeagueRaceItem;
+  options: LeagueDriverOption[];
+  prediction: PredictionPicks | null;
+  actual: PredictionPicks | null;
+  score: ScoreBreakdown | null;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  user_id: number;
+  username: string;
+  display_name: string | null;
+  total_points: number;
+  scored: number;
+  is_you: boolean;
+}
+
+export interface Leaderboard {
+  entries: LeaderboardEntry[];
+  your_rank: number | null;
+}
+
+export interface MyPredictionItem {
+  race: LeagueRaceItem;
+  picks: PredictionPicks;
+  score: ScoreBreakdown | null;
+}
+
+export interface MyPredictions {
+  total_points: number;
+  scored: number;
+  items: MyPredictionItem[];
+}
+
+// --- AI Assistant (Phase 4) ---
+export interface AssistantStat {
+  label: string;
+  value: string;
+}
+
+export interface AssistantEntity {
+  kind: FavoriteKind;
+  ref: string;
+  name: string;
+}
+
+export interface AssistantAnswer {
+  answer: string;
+  intent: string;
+  provider: string;
+  stats: AssistantStat[];
+  entities: AssistantEntity[];
+  suggestions: string[];
+}

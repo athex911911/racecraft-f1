@@ -7,12 +7,15 @@ from fastapi_cache.backends.inmemory import InMemoryBackend
 from sqlalchemy import text
 
 from app.api.v1.analytics import router as analytics_router
+from app.api.v1.assistant import router as assistant_router
+from app.api.v1.auth import router as auth_router
 from app.api.v1.calendar import router as calendar_router
 from app.api.v1.circuits import router as circuits_router
 from app.api.v1.compare import router as compare_router
 from app.api.v1.constructors import router as constructors_router
 from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.drivers import router as drivers_router
+from app.api.v1.league import router as league_router
 from app.api.v1.predict import router as predict_router
 from app.api.v1.search import router as search_router
 from app.api.v1.strategy import router as strategy_router
@@ -45,6 +48,7 @@ app.add_middleware(
 
 
 app.include_router(dashboard_router)
+app.include_router(auth_router)
 app.include_router(analytics_router)
 app.include_router(drivers_router)
 app.include_router(constructors_router)
@@ -54,6 +58,8 @@ app.include_router(compare_router)
 app.include_router(predict_router)
 app.include_router(search_router)
 app.include_router(strategy_router)
+app.include_router(league_router)
+app.include_router(assistant_router)
 
 
 @app.get("/api/health", tags=["system"])

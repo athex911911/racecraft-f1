@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { FavoriteButton } from "@/components/f1/favorite-button";
 import { GlassCard } from "@/components/ui/glass-card";
 
 // Leaflet needs the browser — load the satellite maps client-side only.
@@ -135,6 +136,7 @@ export default function CircuitDetailPage() {
                 })}
               </p>
             ) : null}
+            <FavoriteButton kind="circuit" entityRef={c.circuit_ref} className="mt-3" />
           </div>
         </div>
       </motion.div>

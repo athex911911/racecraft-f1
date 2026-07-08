@@ -143,7 +143,7 @@ export function GlobalSearch() {
   const showPanel = open && query.length >= 2;
 
   return (
-    <div ref={boxRef} className="relative w-full max-w-md">
+    <div ref={boxRef} className="relative w-full max-w-[13rem] 2xl:max-w-xs">
       <div className="relative">
         <input
           ref={inputRef}

@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { RatingsRadar } from "@/components/drivers/ratings-radar";
 import { SeasonPointsChart } from "@/components/drivers/season-points-chart";
 import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { FavoriteButton } from "@/components/f1/favorite-button";
 import { CountUp } from "@/components/ui/count-up";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -132,6 +133,7 @@ export default function ConstructorDetailPage() {
                 <p className="text-[10px] uppercase tracking-widest text-muted">Best finish</p>
               </div>
             ) : null}
+            <FavoriteButton kind="constructor" entityRef={c.constructor_ref} className="shrink-0" />
           </div>
         </GlassCard>
       </motion.div>

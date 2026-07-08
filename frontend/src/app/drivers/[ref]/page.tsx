@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { RatingsRadar } from "@/components/drivers/ratings-radar";
 import { SeasonPointsChart } from "@/components/drivers/season-points-chart";
 import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { FavoriteButton } from "@/components/f1/favorite-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -92,6 +93,7 @@ export default function DriverDetailPage() {
               </div>
             </div>
           ) : null}
+          <FavoriteButton kind="driver" entityRef={driver.driver_ref} className="shrink-0" />
         </div>
       </GlassCard>
 

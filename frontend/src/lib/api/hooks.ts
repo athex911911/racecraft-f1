@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { apiGet } from "./client";
+import { apiGet, apiSend } from "./client";
 import type {
   CalendarRace,
   ChampionshipProgress,
@@ -30,7 +30,64 @@ import type {
   SuitabilityResult,
   TrendingStat,
   WetRatings,
+  AssistantAnswer,
+  Leaderboard,
+  LeagueRaceDetail,
+  LeagueRaces,
+  MyPredictions,
+  SubmitPrediction,
 } from "@/types/f1";
+
+export function useAskAssistant() {
+  return useMutation({
+    mutationFn: (question: string) =>
+      apiSend<AssistantAnswer>("POST", "/api/v1/assistant/ask", { question }),
+  });
+}
+
+export function useLeagueRaces(season?: number) {
+  return useQuery({
+    queryKey: ["league-races", season ?? "current"],
+    queryFn: () => apiGet<LeagueRaces>("/api/v1/league/races", { season }),
+  });
+}
+
+export function useLeagueRace(raceId: number | undefined) {
+  return useQuery({
+    queryKey: ["league-race", raceId],
+    queryFn: () => apiGet<LeagueRaceDetail>(`/api/v1/league/races/${raceId}`),
+    enabled: raceId != null,
+  });
+}
+
+export function useLeaderboard() {
+  return useQuery({
+    queryKey: ["league-leaderboard"],
+    queryFn: () => apiGet<Leaderboard>("/api/v1/league/leaderboard"),
+  });
+}
+
+export function useMyPredictions(enabled: boolean) {
+  return useQuery({
+    queryKey: ["league-me"],
+    queryFn: () => apiGet<MyPredictions>("/api/v1/league/me"),
+    enabled,
+  });
+}
+
+export function useSubmitPrediction() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: SubmitPrediction) =>
+      apiSend<LeagueRaceDetail>("POST", "/api/v1/league/predictions", body),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["league-races"] });
+      qc.invalidateQueries({ queryKey: ["league-race", vars.race_id] });
+      qc.invalidateQueries({ queryKey: ["league-leaderboard"] });
+      qc.invalidateQueries({ queryKey: ["league-me"] });
+    },
+  });
+}
 
 export function useDriverStandings(season = "current") {
   return useQuery({

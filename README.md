@@ -4,7 +4,8 @@
 
 A premium, dark-first F1 analytics platform: live championship dashboard, driver /
 constructor / circuit analytics, head-to-head comparisons, ML race predictions,
-strategy simulation and a prediction league — powered by real historical data.
+strategy simulation, a prediction league and a natural-language assistant —
+powered by real historical data.
 
 ![stack](https://img.shields.io/badge/Next.js%2016-black) ![stack](https://img.shields.io/badge/FastAPI-009688) ![stack](https://img.shields.io/badge/PostgreSQL%2016-336791) ![stack](https://img.shields.io/badge/scikit--learn%20%2B%20XGBoost-orange)
 
@@ -39,7 +40,13 @@ backend\.venv\Scripts\python pipeline\ingest\ingest.py --from-season 2024 --to-s
 backend\.venv\Scripts\python pipeline\ingest\seed.py
 backend\.venv\Scripts\python pipeline\ingest\photos.py   # driver headshots from Wikipedia (optional)
 
-# 3. Frontend
+# 3. Create the auth + prediction-league tables, then optionally seed demo league data
+cd backend
+.venv\Scripts\python -m app.init_db
+.venv\Scripts\python -m app.seed_league      # demo accounts + historical picks (optional)
+cd ..
+
+# 4. Frontend
 cd frontend
 npm install
 npm run dev   # http://localhost:3000
@@ -59,9 +66,18 @@ checkpoints per (entity, season) so it can be stopped and resumed freely.
 ## Project status
 
 - ✅ **Phase 1** — data pipeline, dashboard (standings, next GP, championship chart, trending stats, latest race)
-- ✅ **Phase 2** — driver / constructor / circuit analytics (real photos, computed ratings, records); interactive world map (Leaflet); driver-vs-driver head-to-head; race calendar; history explorer with full results; Hall of Fame all-time records
-- 🚧 **Phase 3** — ML race predictor, strategy simulator, weather & tire analytics
-- 🚧 **Phase 4** — auth, prediction league, AI assistant, polish
+- ✅ **Phase 2** — driver / constructor / circuit analytics (real photos, computed ratings, records); interactive world map (Leaflet); driver-vs-driver head-to-head; race calendar; history explorer with full results
+- ✅ **Phase 3** — ML race predictor + championship Monte Carlo; strategy simulator; performance heatmap & racing lines on satellite imagery; track suitability; weather & tyre analytics (FastF1)
+- ✅ **Phase 4** — accounts & profiles (JWT auth, saved favorites); Prediction League (pick pole / podium / fastest lap, deterministic scoring, leaderboard); template-based AI assistant (natural-language Q&A over the database, no external LLM); _tests & deployment in progress_
+
+### The AI assistant
+
+The assistant answers from the database only — no external LLM, so every answer is
+reproducible. It resolves driver / team / circuit mentions and handles intents like
+career profiles, two-driver head-to-heads, championship standings, "X at \<circuit\>"
+records and the next race. The provider sits behind a pluggable interface
+(`backend/app/insights/`), so a Claude-backed provider could be dropped in later
+without touching the API.
 
 ## Credits
 
