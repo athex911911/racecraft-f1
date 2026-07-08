@@ -63,6 +63,19 @@ backend\.venv\Scripts\python pipeline\ingest\ingest.py --from-season 1950 --to-s
 `--slow` paces requests to Jolpica's 500 req/hr sustained cap. The ingester
 checkpoints per (entity, season) so it can be stopped and resumed freely.
 
+## Testing
+
+Backend (auth, league scoring, assistant intents, API round-trips):
+
+```powershell
+cd backend
+.venv\Scripts\python -m pytest
+```
+
+Tests run against the `f1_insight` database and clean up anything they create
+(throwaway `pytest_*` accounts). The frontend is gated by `npm run build`, which
+runs TypeScript + lint and must pass with zero errors.
+
 ## Project status
 
 - ✅ **Phase 1** — data pipeline, dashboard (standings, next GP, championship chart, trending stats, latest race)
