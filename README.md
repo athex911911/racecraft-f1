@@ -1,272 +1,137 @@
-# 🏎️ Racecraft
-### Formula One Analytics, Storytelling & Performance Intelligence
+# Racecraft
 
-> *Racecraft is more than a Formula One dashboard. It's a modern platform that combines motorsport history, advanced analytics, machine-learning insights, and immersive storytelling into one premium experience.*
+**Formula One analytics, from real data.**
 
----
+Racecraft is a Formula One analytics platform I built to pull the sport's data into one place. F1 information tends to be scattered — standings on one site, history on another, schedules somewhere else — so Racecraft combines standings, driver and team analysis, race predictions, strategy simulation, a prediction league, and a natural-language assistant into a single application.
 
-## 📖 About Racecraft
-
-Formula One is much more than championship standings and race results. It's a sport built on legendary drivers, iconic circuits, engineering brilliance, historic rivalries, and unforgettable moments.
-
-While developing this project, I realized that Formula One information is scattered across multiple platforms. One website provides statistics, another focuses on news, another covers race schedules, and another explores history. Racecraft brings these experiences together into a single platform.
-
-The goal of Racecraft is to create an immersive Formula One experience where users can explore the sport through interactive dashboards, machine-learning analytics, beautiful visualizations, and premium storytelling inspired by modern editorial design.
-
-Instead of simply displaying numbers, Racecraft presents Formula One as the incredible story it truly is.
-
-It currently covers the **2014–2026 seasons**, with all data ingested into its own database so the app never depends on a live third-party API at request time.
+It covers the 2014–2026 seasons and serves everything from its own PostgreSQL database, so it never depends on a live third-party API at request time.
 
 ---
 
-# ✨ Features
+## Features
 
-## 🏠 Interactive Dashboard
+### Dashboard
+The current-season overview: driver and constructor standings, the championship leaders, season progress, a countdown to the next Grand Prix, the latest race summary, and trending form — presented with interactive charts.
 
-The dashboard is the command center of Racecraft and gives a complete overview of the current season.
+### Driver, constructor and circuit analytics
+- **Drivers** — career statistics, wins, podiums, poles, fastest laps, recent form, and ratings computed from actual results.
+- **Constructors** — team history, championship records, driver line-ups, and season-by-season performance trends.
+- **Circuits** — interactive track maps on satellite imagery with derived racing lines, a modelled performance heatmap, lap records, DRS zones, historical winners, weather analysis, and track-suitability ratings for the current grid.
 
-- Driver Championship Standings
-- Constructor Championship Standings
-- Upcoming Grand Prix Countdown
-- Championship Progress
-- Trending Stats & Form
-- Current Championship Leaders
-- Latest Race Summary
-- Interactive Charts
+### Head-to-head comparison
+Compare any two drivers side by side with radar charts and direct head-to-head statistics.
 
----
+### Race predictor
+XGBoost models estimate win, podium, and points-finish probabilities and produce an expected finishing order for a chosen Grand Prix. A Monte Carlo simulation projects championship title odds across the rest of the season. Prediction quality is benchmarked honestly against a pole-position baseline rather than being overstated.
 
-## 👤 Driver Analytics
+### Strategy simulator
+Models one, two, and three-stop race strategies from tyre wear, fuel burn-off, and per-circuit pit loss, and returns the optimal plan with a full lap-time breakdown. Wear severity is adjustable (low / normal / high).
 
-Detailed driver profiles including:
+### Prediction league
+Predict the pole, winner, podium, and fastest lap for upcoming races. Entries are scored automatically once each race finishes, with a points breakdown and a leaderboard. Includes user accounts and saved favorite drivers, teams, and circuits.
 
-- Career Statistics
-- Championships
-- Race Wins
-- Podiums
-- Pole Positions
-- Fastest Laps
-- Average Finish Position
-- Recent Form Guide
-- Computed Performance Ratings
-- Wet-Weather Performance
-- Head-to-Head Comparison
+### Natural-language assistant
+Ask questions in plain English — for example, "Verstappen at Monza" or "compare Hamilton and Leclerc". The assistant resolves drivers, teams, and circuits and answers from the database, so every response is reproducible.
+
+### Additional
+A full race calendar with weekend schedules, weather and conditions insights (wet vs. dry performance, circuit suitability, temperature trends), and a range of data visualizations covering championship progression, performance trends, and historical comparisons.
 
 ---
 
-## 🏎 Constructor Analytics
+## Design
 
-Every Formula One team explored through:
-
-- Team History
-- Championship Records
-- Current & Historic Driver Line-ups
-- Performance Trends
-- Season-by-Season Statistics
-- Team Performance Ratings
+The interface takes cues from modern Formula One broadcast and editorial design: a dark graphite theme, condensed display typography, large photography, and restrained motion. It is responsive across desktop and mobile.
 
 ---
 
-## 🌍 Circuit Explorer
+## Tech stack
 
-Every Formula One circuit includes:
+**Frontend** — Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Recharts, Leaflet
+**Backend** — FastAPI, SQLAlchemy, PostgreSQL
+**Machine learning** — scikit-learn, XGBoost, pandas, NumPy
+**Data** — Jolpica-F1 (the Ergast successor) and FastF1
 
-- Circuit Information & Characteristics
-- Interactive Track Map on Satellite Imagery
-- Derived Racing Lines
-- Performance Heatmap (modelled corner speed)
-- Historical Winners
-- Lap Records
-- DRS Zones
-- Weather & Conditions Analysis
-- Track Suitability & Driver Success Rate
-- Tyre Strategy Insights
+Data is ingested into PostgreSQL and the API reads directly from it; the ML models are trained offline and committed as artifacts.
 
 ---
 
-## ⚔ Driver Comparison
+## Getting started
 
-Compare two drivers side-by-side using:
+Requirements: Python 3.11+, Node 20+, and PostgreSQL 16 with a database named `f1_insight`.
 
-- Head-to-Head Statistics
-- Championships, Wins, Podiums, Poles
-- Performance Radar Charts
-- Career Trajectories
+Backend and data:
 
----
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+copy .env.example .env
 
-## 🤖 AI Race Predictor
+# Ingest data (resumable — safe to stop and rerun)
+cd ..
+backend\.venv\Scripts\python pipeline\ingest\ingest.py --from-season 2024 --to-season 2026 --current-season-standings
+backend\.venv\Scripts\python pipeline\ingest\seed.py
+backend\.venv\Scripts\python pipeline\ingest\photos.py   # driver photos (optional)
 
-Predict race outcomes with machine-learning models trained on historical performance.
+# Create the accounts and prediction-league tables, then start the API
+cd backend
+.venv\Scripts\python -m app.init_db
+.venv\Scripts\python -m app.seed_league      # optional demo accounts and past picks
+.venv\Scripts\python -m uvicorn app.main:app --port 8000
+```
 
-Choose:
+Frontend, in a separate terminal:
 
-- The Grand Prix
-- The starting grid source (official, from qualifying, or estimated)
+```powershell
+cd frontend
+npm install
+npm run dev
+```
 
-The prediction engine provides:
+The app runs at `http://localhost:3000` and the API documentation at `http://localhost:8000/docs`.
 
-- Win Probability
-- Podium Probability
-- Expected Finishing Order
+To backfill older seasons (down to 1950), use `--slow` to respect the data source's rate limit:
 
-It also runs a **Monte Carlo championship simulation** that projects title probabilities across the rest of the season. Win prediction is benchmarked honestly against a pole-position baseline, so the numbers are never dressed up.
+```powershell
+backend\.venv\Scripts\python pipeline\ingest\ingest.py --from-season 1950 --to-season 2023 --slow
+```
 
----
-
-## 📈 Strategy Simulator
-
-Experiment with different race strategies and see how they play out.
-
-Simulate:
-
-- Tyre Compounds & Stint Lengths
-- One, Two, or Three-Stop Plans
-- Tyre Wear Scenarios (low / normal / high)
-- Per-Circuit Pit Loss & Fuel Effects
-
-The simulator returns the optimal plan with a full lap-time breakdown.
-
----
-
-## 🎮 Prediction League
-
-Play against the data and against other users.
-
-- Predict the pole, race winner, podium, and fastest lap for upcoming races
-- Automatic scoring once each race finishes
-- Points, accuracy breakdown, and a global leaderboard
-- Personal accounts with saved favorite drivers, teams, and circuits
+Hosting instructions (Vercel, Render, and a managed Postgres) are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 
-## 🧠 Natural-Language Assistant
+## Testing
 
-Ask about Formula One in plain English — *"Verstappen at Monza"*, *"compare Hamilton and Leclerc"*, *"who leads the championship?"*
+```powershell
+cd backend
+.venv\Scripts\python -m pytest
+```
 
-- Understands drivers, teams, and circuits
-- Career profiles, head-to-heads, standings, next race, and driver-at-circuit records
-- Answers come straight from the database, so every response is reproducible
-
----
-
-## 📅 Race Calendar
-
-Stay up to date with:
-
-- Full Formula One Calendar
-- Upcoming Grand Prix
-- Weekend Schedule
-- Countdown Timers
-- Race Information
+The suite covers authentication, prediction-league scoring, assistant intent matching, and API round-trips. It runs against the `f1_insight` database and cleans up any test data it creates.
 
 ---
 
-## 🌦 Performance Insights
+## Roadmap
 
-Analyze how conditions influence performance.
-
-- Wet Weather Performance
-- Dry Weather Performance
-- Circuit Suitability
-- Temperature & Conditions Trends
-- Historical Race Data
-
----
-
-## 📊 Data Visualization
-
-Racecraft turns complex Formula One data into clear, readable visualizations.
-
-- Championship Progression
-- Driver Performance Trends
-- Constructor Performance
-- Performance Heatmaps
-- Radar Charts
-- Historical Comparisons
-- Performance Timelines
-
----
-
-# 🎨 Design Philosophy
-
-Racecraft is inspired by the visual language of modern Formula One.
-
-The interface focuses on:
-
-- Editorial storytelling
-- Cinematic layouts
-- Premium typography
-- Large immersive photography
-- Smooth animations
-- Minimal yet elegant design
-- A Formula One-inspired color palette
-- A fully responsive experience across all devices
-
-Rather than resembling a traditional analytics dashboard, Racecraft aims to feel like an interactive Formula One experience where every page tells a story.
-
----
-
-# 🛠 Tech Stack
-
-### Frontend
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- Recharts
-- Leaflet
-
-### Backend
-
-- FastAPI
-- Python
-- PostgreSQL
-- SQLAlchemy
-
-### Machine Learning
-
-- Scikit-learn
-- XGBoost
-- Pandas
-- NumPy
-
-### Data
-
-- Jolpica-F1 API (the Ergast successor)
-- FastF1
-
----
-
-# 🚧 Roadmap
-
-Ideas I'd like to build next:
+Planned additions:
 
 - AI-generated race and driver summaries
-- Pit-stop performance analytics (once pit-stop timing data is ingested)
-- Driver of the Week and Featured Circuit spotlights
+- Pit-stop performance analytics (pending pit-stop timing data)
 - Constructor-vs-constructor comparison
-- Famous moments and richer circuit storytelling
-- Deeper team reliability analysis
+- Deeper reliability analysis and circuit storytelling
 
 ---
 
-# 👨‍💻 Developer
+## Data and acknowledgements
 
-**Sanskar AKA Athex**
+Data comes from the [Jolpica-F1](https://github.com/jolpica/jolpica-f1) community API (the Ergast successor) and [FastF1](https://github.com/theOehrly/Fast-F1). Thanks to both projects and the wider Formula One community for making motorsport data accessible.
 
----
+Built for educational and portfolio purposes.
 
-# 🙏 Acknowledgements
+## Author
 
-Racecraft is built for educational and portfolio purposes using publicly available Formula One data.
+Sanskar (athex)
 
-Data comes from the [Jolpica-F1](https://github.com/jolpica/jolpica-f1) community API (the Ergast successor) and [FastF1](https://github.com/theOehrly/Fast-F1). Special thanks to those projects and the wider Formula One community whose open work makes motorsport data accessible to developers and enthusiasts around the world.
+## Disclaimer
 
 This is an unofficial project and is not affiliated with Formula 1, the FIA, or any team.
-
----
-
-> *"Formula One is more than speed. It's strategy, precision, innovation, and legacy. Racecraft is my attempt to bring that experience into a single platform."*
