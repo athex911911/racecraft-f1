@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="Intelligent Formula One Analytics & Performance Platform",
+    description="Formula One Analytics",
     lifespan=lifespan,
 )
 

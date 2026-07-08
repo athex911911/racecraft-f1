@@ -19,7 +19,12 @@ export function DriverCard({ item }: { item: DriverListItem }) {
           aria-hidden
         />
         <div className="flex items-center gap-3 pl-2">
-          <DriverAvatar driver={driver} teamColor={constructor?.color} size="md" />
+          <DriverAvatar
+            driver={driver}
+            teamColor={constructor?.color}
+            size="lg"
+            className="h-[72px] w-[72px] rounded-xl"
+          />
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold leading-tight">
               {nationalityFlag(driver.nationality)} {driver.full_name}

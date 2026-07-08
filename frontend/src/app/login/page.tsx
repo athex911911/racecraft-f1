@@ -194,7 +194,15 @@ export default function LoginPage() {
         transition={{ duration: 0.35 }}
         className="rounded-card rounded-tr-none border border-white/8 bg-carbon-700 p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] sm:p-8"
       >
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <span className="mb-4 flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg rounded-tr-none bg-black ring-1 ring-white/10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/racecraft-mark.png"
+              alt="Racecraft"
+              className="h-full w-full object-contain"
+            />
+          </span>
           <h1 className="font-display text-3xl font-bold uppercase italic tracking-wide">
             {mode === "signin" ? "Sign in" : "Join the paddock"}
           </h1>

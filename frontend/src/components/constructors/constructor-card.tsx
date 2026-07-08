@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { TeamBadge } from "@/components/f1/team-badge";
 import { GlassCard } from "@/components/ui/glass-card";
 import { countryFlag, formatPoints } from "@/lib/utils";
 import type { ConstructorListItem } from "@/types/f1";
@@ -26,10 +27,15 @@ export function ConstructorCard({ item }: { item: ConstructorListItem }) {
         ) : null}
 
         <div className="pl-2">
-          <p className="pr-10 font-display text-lg font-bold leading-tight">{c.name}</p>
-          <p className="text-[11px] uppercase tracking-widest text-muted">
-            {countryFlag(c.nationality)} {c.nationality ?? "—"}
-          </p>
+          <div className="flex items-center gap-3">
+            <TeamBadge constructor={c} className="h-[72px] w-[72px]" />
+            <div className="min-w-0 flex-1">
+              <p className="pr-10 font-display text-lg font-bold leading-tight">{c.name}</p>
+              <p className="text-[11px] uppercase tracking-widest text-muted">
+                {countryFlag(c.nationality)} {c.nationality ?? "—"}
+              </p>
+            </div>
+          </div>
 
           <div className="mt-3 flex items-center gap-3">
             <div className="flex gap-1.5">

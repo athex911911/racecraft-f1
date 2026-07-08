@@ -1,6 +1,6 @@
-# F1 Insight AI
+# Racecraft
 
-**Intelligent Formula One Analytics & Performance Platform**
+**Formula One Analytics**
 
 A premium, dark-first F1 analytics platform: live championship dashboard, driver /
 constructor / circuit analytics, head-to-head comparisons, ML race predictions,

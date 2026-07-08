@@ -1,4 +1,4 @@
-# F1 Insight AI - start both dev servers (backend :8000 + frontend :3000).
+# Racecraft - start both dev servers (backend :8000 + frontend :3000).
 # Usage:  right-click > "Run with PowerShell", or in a terminal:  ./start-dev.ps1
 # Stops anything already on those ports first, so it's safe to re-run.
 
@@ -15,7 +15,7 @@ function Stop-Port([int]$port) {
     }
 }
 
-Write-Host "F1 Insight AI - starting dev servers" -ForegroundColor Red
+Write-Host "Racecraft - starting dev servers" -ForegroundColor Red
 Stop-Port 8000
 Stop-Port 3000
 

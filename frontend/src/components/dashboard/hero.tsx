@@ -5,6 +5,8 @@ import { ChevronRight, Crown, Shield } from "lucide-react";
 import Link from "next/link";
 
 import { Countdown } from "@/components/f1/countdown";
+import { DriverAvatar } from "@/components/f1/driver-avatar";
+import { TeamBadge } from "@/components/f1/team-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useConstructorStandings,
@@ -124,43 +126,54 @@ export function Hero() {
         {/* live season chips */}
         <div className="mt-9 grid gap-3 lg:grid-cols-3">
           {data.leader && (
-            <div className="rounded-xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
-              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
-                <Crown className="h-3.5 w-3.5 text-warning" /> Championship leader
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  <Crown className="h-3.5 w-3.5 text-warning" /> Championship leader
+                </div>
+                <p className="mt-2 font-display text-xl font-bold leading-tight">
+                  {data.leader.driver.full_name}
+                </p>
+                <p className="mt-0.5 text-sm text-silver">
+                  <span
+                    className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle"
+                    style={{ background: data.leader.constructor?.color ?? "#3d3d3d" }}
+                  />
+                  {data.leader.constructor?.name} ·{" "}
+                  <span className="tabular-nums">{formatPoints(data.leader.points)} pts</span> ·{" "}
+                  {data.leader.wins} wins
+                </p>
               </div>
-              <p className="mt-2 font-display text-xl font-bold">
-                {data.leader.driver.full_name}
-              </p>
-              <p className="mt-0.5 text-sm text-silver">
-                <span
-                  className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle"
-                  style={{ background: data.leader.constructor?.color ?? "#3d3d3d" }}
-                />
-                {data.leader.constructor?.name} ·{" "}
-                <span className="tabular-nums">{formatPoints(data.leader.points)} pts</span> ·{" "}
-                {data.leader.wins} wins
-              </p>
+              <DriverAvatar
+                driver={data.leader.driver}
+                teamColor={data.leader.constructor?.color}
+                size="lg"
+                className="rounded-xl"
+              />
             </div>
           )}
 
           {data.leading_constructor && (
-            <div className="rounded-xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
-              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
-                <Shield className="h-3.5 w-3.5 text-accent" /> Leading constructor
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  <Shield className="h-3.5 w-3.5 text-accent" /> Leading constructor
+                </div>
+                <p className="mt-2 font-display text-xl font-bold leading-tight">
+                  {data.leading_constructor.constructor.name}
+                </p>
+                <p className="mt-0.5 text-sm text-silver">
+                  <span
+                    className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle"
+                    style={{ background: data.leading_constructor.constructor.color ?? "#3d3d3d" }}
+                  />
+                  <span className="tabular-nums">
+                    {formatPoints(data.leading_constructor.points)} pts
+                  </span>{" "}
+                  · {data.leading_constructor.wins} wins
+                </p>
               </div>
-              <p className="mt-2 font-display text-xl font-bold">
-                {data.leading_constructor.constructor.name}
-              </p>
-              <p className="mt-0.5 text-sm text-silver">
-                <span
-                  className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle"
-                  style={{ background: data.leading_constructor.constructor.color ?? "#3d3d3d" }}
-                />
-                <span className="tabular-nums">
-                  {formatPoints(data.leading_constructor.points)} pts
-                </span>{" "}
-                · {data.leading_constructor.wins} wins
-              </p>
+              <TeamBadge constructor={data.leading_constructor.constructor} />
             </div>
           )}
 

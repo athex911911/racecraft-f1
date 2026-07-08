@@ -30,10 +30,10 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
   title: {
-    default: "F1 Insight AI",
-    template: "%s · F1 Insight AI",
+    default: "Racecraft",
+    template: "%s · Racecraft",
   },
-  description: "Intelligent Formula One Analytics & Performance Platform",
+  description: "Formula One Analytics",
 };
 
 export default function RootLayout({
