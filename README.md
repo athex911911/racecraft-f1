@@ -111,17 +111,6 @@ The suite covers authentication, prediction-league scoring, assistant intent mat
 
 ---
 
-## Roadmap
-
-Planned additions:
-
-- AI-generated race and driver summaries
-- Pit-stop performance analytics (pending pit-stop timing data)
-- Constructor-vs-constructor comparison
-- Deeper reliability analysis and circuit storytelling
-
----
-
 ## Data and acknowledgements
 
 Data comes from the [Jolpica-F1](https://github.com/jolpica/jolpica-f1) community API (the Ergast successor) and [FastF1](https://github.com/theOehrly/Fast-F1). Thanks to both projects and the wider Formula One community for making motorsport data accessible.
