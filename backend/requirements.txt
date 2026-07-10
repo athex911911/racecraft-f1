@@ -6,6 +6,7 @@ psycopg[binary]>=3.2
 pydantic>=2.9
 pydantic-settings>=2.6
 fastapi-cache2>=0.2.2
+jinja2>=3.1  # required transitively by fastapi-cache2 (starlette.templating), not pulled in on a clean install
 httpx>=0.27
 python-jose[cryptography]>=3.3
 bcrypt>=4.0
