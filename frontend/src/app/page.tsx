@@ -18,10 +18,9 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-10">
       <Hero />
-      <div className="grid gap-10 2xl:grid-cols-[1.5fr_1fr] 2xl:gap-6">
+      <div className="grid gap-10">
         <Standings />
-        {/* between Standings and Next GP when stacked; full-width row below the pair at 2xl */}
-        <TeamRibbon className="2xl:order-3 2xl:col-span-2" />
+        <TeamRibbon />
         <NextRaceCard />
       </div>
       <ChampionshipChart />
