@@ -2,6 +2,8 @@
 
 **Formula One analytics, from real data.**
 
+🔗 **Live demo — [racecraft-f1.vercel.app](https://racecraft-f1.vercel.app)**
+
 Racecraft is a Formula One analytics platform I built to pull the sport's data into one place. F1 information tends to be scattered — standings on one site, history on another, schedules somewhere else — so Racecraft combines standings, driver and team analysis, race predictions, strategy simulation, a prediction league, and a natural-language assistant into a single application.
 
 It covers the 2014–2026 seasons and serves everything from its own PostgreSQL database, so it never depends on a live third-party API at request time.
